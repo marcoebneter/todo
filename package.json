@@ -1,0 +1,26 @@
+{
+    "name": "vorlage",
+    "version": "1.0.0",
+    "description": "",
+    "license": "ISC",
+    "author": "",
+    "type": "module",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "start:watch": "node --watch index.js",
+        "lint": "eslint \"**/*.js\" \"**/*.css\"",
+        "format": "prettier --write \"**/*.{js,cjs,mjs,css,html,json,md}\"",
+        "format:check": "prettier --check \"**/*.{js,cjs,mjs,css,html,json,md}\""
+    },
+    "devDependencies": {
+        "@eslint/css": "^1.1.0",
+        "@eslint/js": "^10.0.1",
+        "eslint": "^10.2.0",
+        "globals": "^17.5.0",
+        "prettier": "3.8.2"
+    },
+    "dependencies": {
+        "express": "^5.2.1"
+    }
+}
