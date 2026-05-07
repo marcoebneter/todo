@@ -9,7 +9,7 @@ export default defineConfig([
         ignores: ["node_modules/**", "dist/**", "coverage/**"],
     },
     {
-        files: ["src/public/scripts/**/*.{js,mjs,cjs}"],
+        files: ["src/app/scripts/**/*.{js,mjs,cjs}"],
         plugins: { js },
         extends: ["js/recommended"],
         languageOptions: {
@@ -37,7 +37,7 @@ export default defineConfig([
         },
     },
     {
-        files: ["src/public/styles/**/*.css"],
+        files: ["src/app/**/*.css"],
         plugins: { css },
         language: "css/css",
         extends: ["css/recommended"],
@@ -46,7 +46,7 @@ export default defineConfig([
         },
     },
     {
-        files: ["src/public/**/*.html"],
+        files: ["src/app/**/*.html"],
         ...html.configs["flat/recommended"],
     },
 ]);

@@ -1,5 +1,3 @@
-console.log("Hello World");
-
 // --- Dark Mode ---
 
 const STORAGE_KEY = "theme";
