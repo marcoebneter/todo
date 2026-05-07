@@ -1,0 +1,36 @@
+{
+  "name": "todo-app",
+  "version": "1.0.0",
+  "description": "This is a todo app to organize your tasks and increase productivity. It is also the Project 1 of the CAS Frontend Engineering course.",
+  "license": "ISC",
+  "author": "Marco Ebneter",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "start:watch": "node --watch index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint-staged": "lint-staged",
+    "format": "prettier --write \"**/*.{js,cjs,mjs,css,html,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,cjs,mjs,css,html,json,md}\"",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,mjs,cjs,css,html}": "eslint --max-warnings=0"
+  },
+  "devDependencies": {
+    "@eslint/css": "^1.1.0",
+    "@eslint/js": "^10.0.1",
+    "@html-eslint/eslint-plugin": "^0.60.0",
+    "@html-eslint/parser": "^0.60.0",
+    "eslint": "^10.2.0",
+    "globals": "^17.5.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.2",
+    "prettier": "^3.8.3"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
