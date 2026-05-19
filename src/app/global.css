@@ -34,6 +34,41 @@ h1 {
     font-weight: bold;
 }
 
+input,
+textarea,
+select,
+button {
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.8rem;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    background: var(--bg);
+    color: var(--text);
+}
+
+button {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    cursor: pointer;
+}
+
+button.secondary {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border);
+}
+
+button.danger {
+    background: var(--danger);
+    border-color: var(--danger);
+}
+
 .app-shell {
     width: min(100%, 860px);
     margin: 0 auto;
@@ -47,6 +82,8 @@ h1 {
     right: 1rem;
     z-index: 1000;
     border-color: var(--border);
+    background: var(--surface);
+    color: var(--text);
 }
 
 .theme-toggle:hover {
