@@ -24,7 +24,7 @@ export default defineConfig([
         },
     },
     {
-        files: ["index.js"],
+        files: ["src/server/**/*.js", "scripts/**/*.{js,mjs,cjs}", "index.js"],
         plugins: { js },
         extends: ["js/recommended"],
         languageOptions: {
@@ -34,6 +34,7 @@ export default defineConfig([
         },
         rules: {
             "no-console": "off",
+            "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
         },
     },
     {
