@@ -1,32 +1,32 @@
 :root {
-    --bg: #ffffff;
-    --surface: #f0f0f0;
-    --text: #1a1a1a;
-    --text-muted: #555555;
-    --border: #cccccc;
+    --bg: #fff;
+    --surface: #f4f4f4;
+    --text: #111;
+    --muted: #666;
+    --border: #d0d0d0;
     --accent: #0066cc;
+    --danger: #b42318;
 }
 
 [data-theme="dark"] {
     --bg: #1a1a1a;
     --surface: #2a2a2a;
     --text: #f0f0f0;
-    --text-muted: #aaaaaa;
-    --border: #444444;
+    --muted: #aaa;
+    --border: #444;
     --accent: #4da6ff;
 }
 
 * {
-    font-family: "Source Code Pro", monospace;
     box-sizing: border-box;
+    font-family: "Source Code Pro", monospace;
 }
 
 body {
-    background-color: var(--bg);
-    color: var(--text);
-    transition: background-color 0.3s ease, color 0.3s ease;
     margin: 0;
     padding: 1rem;
+    background: var(--bg);
+    color: var(--text);
 }
 
 h1 {
@@ -34,19 +34,19 @@ h1 {
     font-weight: bold;
 }
 
+.app-shell {
+    width: min(100%, 860px);
+    margin: 0 auto;
+    display: grid;
+    gap: 1rem;
+}
+
 .theme-toggle {
     position: fixed;
     top: 1rem;
     right: 1rem;
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 0.5rem;
-    padding: 0.4rem 0.75rem;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     z-index: 1000;
+    border-color: var(--border);
 }
 
 .theme-toggle:hover {

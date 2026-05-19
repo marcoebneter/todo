@@ -49,5 +49,9 @@ export default defineConfig([
     {
         files: ["src/app/**/*.html"],
         ...html.configs["flat/recommended"],
+        rules: {
+            ...html.configs["flat/recommended"].rules,
+            "@html-eslint/require-closing-tags": "off",
+        },
     },
 ]);
