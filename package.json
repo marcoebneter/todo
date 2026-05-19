@@ -5,10 +5,10 @@
   "license": "ISC",
   "author": "Marco Ebneter",
   "type": "module",
-  "main": "index.js",
+  "main": "node src/server/server.js",
   "scripts": {
-    "start": "node index.js",
-    "start:watch": "node --watch index.js",
+    "start": "node src/server/server.js",
+    "start:watch": "node --watch src/server/server.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint-staged": "lint-staged",
@@ -31,6 +31,7 @@
     "prettier": "^3.8.3"
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "sqlite3": "^6.0.1"
   }
 }
