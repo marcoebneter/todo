@@ -1,32 +1,32 @@
 :root {
-    --bg: #ffffff;
-    --surface: #f0f0f0;
-    --text: #1a1a1a;
-    --text-muted: #555555;
-    --border: #cccccc;
+    --bg: #fff;
+    --surface: #f4f4f4;
+    --text: #111;
+    --muted: #666;
+    --border: #d0d0d0;
     --accent: #0066cc;
+    --danger: #b42318;
 }
 
 [data-theme="dark"] {
     --bg: #1a1a1a;
     --surface: #2a2a2a;
     --text: #f0f0f0;
-    --text-muted: #aaaaaa;
-    --border: #444444;
+    --muted: #aaa;
+    --border: #444;
     --accent: #4da6ff;
 }
 
 * {
-    font-family: "Source Code Pro", monospace;
     box-sizing: border-box;
+    font-family: "Source Code Pro", monospace;
 }
 
 body {
-    background-color: var(--bg);
-    color: var(--text);
-    transition: background-color 0.3s ease, color 0.3s ease;
     margin: 0;
     padding: 1rem;
+    background: var(--bg);
+    color: var(--text);
 }
 
 h1 {
@@ -34,19 +34,135 @@ h1 {
     font-weight: bold;
 }
 
+input,
+textarea,
+select,
+button {
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.8rem;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    background: var(--bg);
+    color: var(--text);
+}
+
+input[type="checkbox"] {
+    width: auto;
+}
+
+button {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    cursor: pointer;
+}
+
+button.secondary {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border);
+}
+
+button.danger {
+    background: var(--danger);
+    border-color: var(--danger);
+}
+
+.visually-hidden {
+    display: none;
+}
+
+.app-shell {
+    width: min(100%, 860px);
+    margin: 0 auto;
+    display: grid;
+    gap: 1rem;
+}
+
+.note-form,
+.toolbar,
+.note-item {
+    padding: 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background: var(--surface);
+}
+
+.note-form,
+.note-item,
+.notes-list {
+    display: grid;
+    gap: 0.7rem;
+}
+
+.notes-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.toolbar label {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+}
+
+.form-actions,
+.note-actions,
+.note-header,
+.note-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    align-items: center;
+}
+
+.note-header {
+    justify-content: space-between;
+}
+
+.note-item.is-completed h2,
+.note-item.is-completed p {
+    color: var(--muted);
+    text-decoration: line-through;
+}
+
+.error-message {
+    margin: 0;
+    min-height: 1.2em;
+    color: #d92d20;
+}
+
+.empty-state {
+    margin: 0;
+    text-align: center;
+    color: var(--muted);
+}
+
 .theme-toggle {
     position: fixed;
     top: 1rem;
     right: 1rem;
+    z-index: 1000;
+    border-color: var(--border);
     background: var(--surface);
     color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 0.5rem;
-    padding: 0.4rem 0.75rem;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-    z-index: 1000;
 }
 
 .theme-toggle:hover {

@@ -24,7 +24,7 @@ export default defineConfig([
         },
     },
     {
-        files: ["index.js"],
+        files: ["src/server/**/*.js", "scripts/**/*.{js,mjs,cjs}", "index.js"],
         plugins: { js },
         extends: ["js/recommended"],
         languageOptions: {
@@ -34,6 +34,7 @@ export default defineConfig([
         },
         rules: {
             "no-console": "off",
+            "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
         },
     },
     {
@@ -48,5 +49,9 @@ export default defineConfig([
     {
         files: ["src/app/**/*.html"],
         ...html.configs["flat/recommended"],
+        rules: {
+            ...html.configs["flat/recommended"].rules,
+            "@html-eslint/require-closing-tags": "off",
+        },
     },
 ]);
