@@ -29,6 +29,7 @@
             <h1>Todo / Notizen</h1>
 
             <form id="note-form" class="note-form">
+                <label for="note-title" class="visually-hidden">Titel der Notiz</label>
                 <input
                     id="note-title"
                     name="title"
@@ -37,6 +38,7 @@
                     required
                     maxlength="120"
                 />
+                <label for="note-content" class="visually-hidden">Notiz</label>
                 <textarea
                     id="note-content"
                     name="content"
@@ -58,6 +60,28 @@
                     role="alert"
                 ></p>
             </form>
+
+            <section class="toolbar" aria-label="Filter und Sortierung">
+                <label>
+                    Sortierung
+                    <select id="sort-select">
+                        <option value="oldest" selected>Älteste zuerst</option>
+                        <option value="newest">Neueste zuerst</option>
+                    </select>
+                </label>
+
+                <label class="checkbox-label">
+                    Abgeschlossene anzeigen
+                    <input id="show-completed" type="checkbox"/>
+                </label>
+            </section>
+
+            <ul
+                id="notes-list"
+                class="notes-list"
+                aria-live="polite"
+            ></ul>
+            <p id="empty-state" class="empty-state">Keine offenen Notizen vorhanden.</p>
         </main>
     </body>
 </html>
