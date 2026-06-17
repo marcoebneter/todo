@@ -24,11 +24,12 @@ class NoteService {
      * @param {string} title - Note title (required, non-empty)
      * @param {string} content - Note content (optional)
      * @param {number} priority - Note priority 1-3 (optional, default 2)
+     * @param {string|null} dueDate - Due date in ISO format YYYY-MM-DD (optional, default null)
      * @returns {Promise<Object>} - Created note object
      * @throws {Error} - If creation fails
      */
-    async createNote(title, content = "", priority = 2) {
-        return await NoteModel.create({ title, content, priority });
+    async createNote(title, content = "", priority = 2, dueDate = null) {
+        return await NoteModel.create({ title, content, priority, dueAt: dueDate });
     }
 
     /**
@@ -38,11 +39,12 @@ class NoteService {
      * @param {string} content - New content
      * @param {boolean} completed - New completed status
      * @param {number} priority - New priority 1-3
+     * @param {string|null} dueDate - Due date in ISO format YYYY-MM-DD (optional, default null)
      * @returns {Promise<Object|null>} - Updated note or null if not found
      * @throws {Error} - If update fails
      */
-    async updateNote(id, title, content = "", completed = false, priority = 2) {
-        return await NoteModel.replace(id, { title, content, completed, priority });
+    async updateNote(id, title, content = "", completed = false, priority = 2, dueDate = null) {
+        return await NoteModel.replace(id, { title, content, completed, priority, dueAt: dueDate });
     }
 
     /**

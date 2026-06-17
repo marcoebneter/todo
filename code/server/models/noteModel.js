@@ -20,12 +20,13 @@ function mapNote(row) {
         priority: row.priority || 2,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
+        dueAt: row.due_at || null,
     };
 }
 
 async function findById(id) {
     const row = await Database.get(
-        `SELECT id, title, content, completed, priority, created_at, updated_at
+        `SELECT id, title, content, completed, priority, created_at, updated_at, due_at
          FROM notes
          WHERE id = ? AND deleted_at IS NULL`,
         [id],
@@ -44,12 +45,15 @@ async function list({ sort = "oldest", activeOnly = false }) {
     let orderClause;
     if (sort === "priority") {
         orderClause = "ORDER BY priority DESC, datetime(created_at) ASC, id ASC";
+    } else if (sort === "dueDate") {
+        orderClause =
+            "ORDER BY CASE WHEN due_at IS NULL THEN 1 ELSE 0 END, due_at ASC, datetime(created_at) ASC, id ASC";
     } else {
         orderClause = `ORDER BY datetime(created_at) ${sort === "oldest" ? "ASC" : "DESC"}, id ASC`;
     }
 
     const rows = await Database.all(
-        `SELECT id, title, content, completed, priority, created_at, updated_at
+        `SELECT id, title, content, completed, priority, created_at, updated_at, due_at
          FROM notes
          WHERE ${whereParts.join(" AND ")}
          ${orderClause}`,
@@ -58,22 +62,22 @@ async function list({ sort = "oldest", activeOnly = false }) {
     return rows.map(mapNote);
 }
 
-async function create({ title, content, priority = 2 }) {
+async function create({ title, content, priority = 2, dueAt = null }) {
     const result = await Database.run(
-        `INSERT INTO notes (title, content, priority, completed, created_at, updated_at)
-         VALUES (?, ?, ?, 0, datetime('now'), datetime('now'))`,
-        [title, content, priority],
+        `INSERT INTO notes (title, content, priority, completed, created_at, updated_at, due_at)
+         VALUES (?, ?, ?, 0, datetime('now'), datetime('now'), ?)`,
+        [title, content, priority, dueAt],
     );
 
     return findById(result.lastID);
 }
 
-async function replace(id, { title, content, completed, priority = 2 }) {
+async function replace(id, { title, content, completed, priority = 2, dueAt = null }) {
     const result = await Database.run(
         `UPDATE notes
-         SET title = ?, content = ?, completed = ?, priority = ?, updated_at = datetime('now')
+         SET title = ?, content = ?, completed = ?, priority = ?, due_at = ?, updated_at = datetime('now')
          WHERE id = ? AND deleted_at IS NULL`,
-        [title, content, completed ? 1 : 0, priority, id],
+        [title, content, completed ? 1 : 0, priority, dueAt, id],
     );
 
     return result.changes === 0 ? null : findById(id);
@@ -101,6 +105,11 @@ async function patch(id, payload) {
     if (Object.hasOwn(payload, "priority")) {
         updates.push("priority = ?");
         params.push(payload.priority);
+    }
+
+    if (Object.hasOwn(payload, "dueAt")) {
+        updates.push("due_at = ?");
+        params.push(payload.dueAt);
     }
 
     if (updates.length === 0) {

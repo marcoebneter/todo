@@ -7,6 +7,7 @@ import {
     parseOptionalCompleted,
     parseOptionalContent,
     parseOptionalPriority,
+    parseOptionalDueDate,
     parseRequiredTitle,
     parseId,
 } from "../utils/validators.js";
@@ -103,6 +104,19 @@ export function buildPatchPayload(body, res) {
             return { ok: false };
         }
         payload.priority = priorityResult.value;
+    }
+
+    if (Object.hasOwn(body, "dueAt")) {
+        const dueDateResult = parseOptionalDueDate(body.dueAt);
+        if (!dueDateResult.ok) {
+            errorResponse(
+                res,
+                { code: "VALIDATION_ERROR", message: dueDateResult.message, details: dueDateResult.details },
+                400,
+            );
+            return { ok: false };
+        }
+        payload.dueAt = dueDateResult.value;
     }
 
     const hasUpdates = Object.keys(payload).length > 0;

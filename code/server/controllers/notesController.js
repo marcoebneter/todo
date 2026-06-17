@@ -11,6 +11,7 @@ import {
     parseOptionalContent,
     parseOptionalCompleted,
     parseOptionalPriority,
+    parseOptionalDueDate,
 } from "../utils/validators.js";
 import {
     ensureValidId,
@@ -32,7 +33,7 @@ class NotesController {
      */
     async list(req, res, next) {
         try {
-            const sort = ["newest", "priority"].includes(req.query.sort) ? req.query.sort : "oldest";
+            const sort = ["newest", "priority", "dueDate"].includes(req.query.sort) ? req.query.sort : "oldest";
             const activeOnly = req.query.activeOnly === "true";
 
             const notes = await this.noteService.listNotes({
@@ -47,22 +48,25 @@ class NotesController {
 
     /**
      * POST /api/notes - Create a new note.
-     * Body: { title: string (required), content?: string, priority?: 1-3 }
+     * Body: { title: string (required), content?: string, priority?: 1-3, dueAt?: string (ISO format YYYY-MM-DD) }
      */
     async create(req, res, next) {
         try {
             const titleResult = parseRequiredTitle(req.body.title);
             const contentResult = parseOptionalContent(req.body.content);
             const priorityResult = parseOptionalPriority(req.body.priority);
+            const dueDateResult = parseOptionalDueDate(req.body.dueAt);
 
             if (!handleValidationResult(res, titleResult)) return;
             if (!handleValidationResult(res, contentResult)) return;
             if (!handleValidationResult(res, priorityResult)) return;
+            if (!handleValidationResult(res, dueDateResult)) return;
 
             const note = await this.noteService.createNote(
                 titleResult.value,
                 contentResult.value,
                 priorityResult.value,
+                dueDateResult.value,
             );
             createdResponse(res, note);
         } catch (error) {
@@ -73,7 +77,7 @@ class NotesController {
     /**
      * PUT /api/notes/:id - Replace an entire note.
      * Params: id (positive integer)
-     * Body: { title: string (required), content?: string, completed?: boolean, priority?: 1-3 }
+     * Body: { title: string (required), content?: string, completed?: boolean, priority?: 1-3, dueAt?: string (ISO format YYYY-MM-DD) }
      */
     async replace(req, res, next) {
         try {
@@ -84,11 +88,13 @@ class NotesController {
             const contentResult = parseOptionalContent(req.body.content);
             const completedResult = parseOptionalCompleted(req.body.completed);
             const priorityResult = parseOptionalPriority(req.body.priority);
+            const dueDateResult = parseOptionalDueDate(req.body.dueAt);
 
             if (!handleValidationResult(res, titleResult)) return;
             if (!handleValidationResult(res, contentResult)) return;
             if (!handleValidationResult(res, completedResult)) return;
             if (!handleValidationResult(res, priorityResult)) return;
+            if (!handleValidationResult(res, dueDateResult)) return;
 
             const note = await this.noteService.updateNote(
                 id,
@@ -96,6 +102,7 @@ class NotesController {
                 contentResult.value,
                 completedResult.value,
                 priorityResult.value,
+                dueDateResult.value,
             );
 
             if (sendNotFoundIfMissing(res, "Note", note)) return;
@@ -125,7 +132,7 @@ class NotesController {
                     {
                         code: "VALIDATION_ERROR",
                         message: "No valid fields to update.",
-                        details: { fields: ["title", "content", "completed", "priority"] },
+                        details: { fields: ["title", "content", "completed", "priority", "dueAt"] },
                     },
                     400,
                 );
