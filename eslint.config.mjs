@@ -53,6 +53,7 @@ export default defineConfig([
             ...html.configs["flat/recommended"].rules,
             "@html-eslint/require-closing-tags": "off",
             "@html-eslint/attrs-newline": "off",
+            "@html-eslint/no-extra-spacing-tags": "off",
         },
     },
 ]);
