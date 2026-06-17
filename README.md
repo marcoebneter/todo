@@ -1,4 +1,4 @@
-<div align="center">
+<div>
 
 <h1>📝 Todo / Notes App</h1>
 
@@ -90,7 +90,7 @@ The application follows the **MVC pattern on both server and client**.
 
 | File                                                 | Responsibility                                      |
 | ---------------------------------------------------- | --------------------------------------------------- |
-| `code/public/scripts/main.js`                        | Client bootstrap — wires view and controller        |
+| `code/public/scripts/index.js`                       | Client bootstrap — wires view and controller        |
 | `code/public/scripts/controllers/notesController.js` | UI state management and event orchestration         |
 | `code/public/scripts/views/notesView.js`             | Handlebars template rendering and DOM event binding |
 | `code/public/scripts/models/notesApi.js`             | All `fetch` calls to the server API                 |
@@ -119,7 +119,7 @@ todo/
 │   │       │   └── notesApi.js
 │   │       ├── views/
 │   │       │   └── notesView.js
-│   │       ├── main.js
+│   │       ├── index.js
 │   │       └── theme.js
 │   └── server/
 │       ├── app.js
@@ -305,6 +305,6 @@ Distributed under the ISC License. See [`LICENSE.md`](LICENSE.md) for more infor
 
 ---
 
-<div align="center">
+<div>
   <p>Made with ❤️ for the CAS Frontend Engineering course</p>
 </div>

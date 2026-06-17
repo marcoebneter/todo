@@ -4,12 +4,8 @@
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>Todo App</title>
-        <link
-            rel="icon"
-            href="favicon.png"
-            type="image/png"
-        />
-        <link rel="stylesheet" href="global.css"/>
+        <link rel="icon" href="favicon.png" type="image/png"/>
+        <link rel="stylesheet" href="styles/index.css"/>
 
         <script
             src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.3/handlebars.min.js"
@@ -17,43 +13,22 @@
             crossorigin="anonymous"
             defer
         ></script>
-        <script src="scripts/main.js" type="module" defer></script>
+        <script src="scripts/index.js" type="module" defer></script>
         <script src="scripts/theme.js" type="module" defer></script>
     </head>
     <body>
-        <button
-            class="theme-toggle"
-            id="theme-toggle"
-            aria-label="Toggle dark mode"
-        >🌙</button>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
         <main class="app-shell">
             <h1>Todo / Notizen</h1>
 
             <form id="note-form" class="note-form">
                 <label for="note-title" class="visually-hidden">Titel der Notiz</label>
-                <input
-                    id="note-title"
-                    name="title"
-                    type="text"
-                    placeholder="Titel"
-                    required
-                    maxlength="120"
-                />
+                <input id="note-title" name="title" type="text" placeholder="Titel" required maxlength="120"/>
                 <label for="note-content" class="visually-hidden">Notiz</label>
-                <textarea
-                    id="note-content"
-                    name="content"
-                    rows="4"
-                    placeholder="Notiz oder Aufgabe"
-                ></textarea>
+                <textarea id="note-content" name="content" rows="4" placeholder="Notiz oder Aufgabe"></textarea>
                 <div class="form-actions">
                     <div id="save-button-mount"></div>
-                    <button
-                        type="button"
-                        id="cancel-edit-button"
-                        class="secondary"
-                        hidden
-                    >Bearbeiten abbrechen</button>
+                    <button type="button" id="cancel-edit-button" class="secondary" hidden>Bearbeiten abbrechen</button>
                 </div>
                 <div id="form-error-mount"></div>
             </form>
