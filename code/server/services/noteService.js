@@ -10,7 +10,8 @@ class NoteService {
     /**
      * List all notes with optional filtering.
      * @param {Object} options - Filter options
-     * @param {string} options.sort - Sort order: "oldest" or "newest" (default: "oldest")
+     * @param {string} options.sort - Sort order: "oldest", "newest", or "priority" (default: "oldest")
+     *                                 "priority" sorts by priority DESC (high to low), then by creation date
      * @param {boolean} options.activeOnly - Show only active (not completed) notes (default: false)
      * @returns {Promise<Array>} - Array of note objects
      */

@@ -27,12 +27,12 @@ class NotesController {
     /**
      * GET /api/notes - List all notes with optional filtering.
      * Query params:
-     *   - sort: "oldest" (default) or "newest"
+     *   - sort: "oldest" (default), "newest", or "priority"
      *   - activeOnly: "true" to show only uncompleted notes
      */
     async list(req, res, next) {
         try {
-            const sort = req.query.sort === "newest" ? "newest" : "oldest";
+            const sort = ["newest", "priority"].includes(req.query.sort) ? req.query.sort : "oldest";
             const activeOnly = req.query.activeOnly === "true";
 
             const notes = await this.noteService.listNotes({

@@ -41,11 +41,18 @@ async function list({ sort = "oldest", activeOnly = false }) {
         whereParts.push("completed = 0");
     }
 
+    let orderClause;
+    if (sort === "priority") {
+        orderClause = "ORDER BY priority DESC, datetime(created_at) ASC, id ASC";
+    } else {
+        orderClause = `ORDER BY datetime(created_at) ${sort === "oldest" ? "ASC" : "DESC"}, id ASC`;
+    }
+
     const rows = await Database.all(
         `SELECT id, title, content, completed, priority, created_at, updated_at
          FROM notes
          WHERE ${whereParts.join(" AND ")}
-         ORDER BY datetime(created_at) ${sort === "oldest" ? "ASC" : "DESC"}, id ASC`,
+         ${orderClause}`,
     );
 
     return rows.map(mapNote);
