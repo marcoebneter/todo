@@ -1,0 +1,17 @@
+button {
+    background-color: var(--button-background-color);
+    color: var(--button-text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.8rem;
+    cursor: pointer;
+}
+
+button.secondary {
+    background: transparent;
+    color: var(--text-color);
+}
+
+button.danger {
+    background-color: var(--button-background-color-danger);
+}

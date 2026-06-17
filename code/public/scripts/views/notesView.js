@@ -1,11 +1,11 @@
 class NotesView {
     constructor() {
-        this.noteForm = document.getElementById("note-form");
+        this.noteEditForm = document.getElementById("frm-note-edit");
         this.noteTitle = document.getElementById("note-title");
         this.noteContent = document.getElementById("note-content");
         this.sortSelect = document.getElementById("sort-select");
         this.showCompletedCheckbox = document.getElementById("show-completed");
-        this.cancelEditButton = document.getElementById("cancel-edit-button");
+        this.cancelEditButton = document.getElementById("btn-cancel-edit");
         this.notesMount = document.getElementById("notes-mount");
         this.formErrorMount = document.getElementById("form-error-mount");
         this.saveButtonMount = document.getElementById("save-button-mount");
@@ -24,7 +24,7 @@ class NotesView {
     }
 
     bindFormSubmit(handler) {
-        this.noteForm.addEventListener("submit", async (event) => {
+        this.noteEditForm.addEventListener("submit", async (event) => {
             event.preventDefault();
             await handler({
                 title: this.noteTitle.value,
@@ -102,6 +102,7 @@ class NotesView {
     }
 
     renderError(message) {
+        this.formErrorMount.classList.toggle("visually-hidden", message === "");
         this.formErrorMount.innerHTML = this.errorTemplate({ message });
     }
 
@@ -118,7 +119,7 @@ class NotesView {
             return;
         }
 
-        this.noteForm.reset();
+        this.noteEditForm.reset();
         this.cancelEditButton.hidden = true;
     }
 

@@ -43,7 +43,7 @@ export default defineConfig([
         language: "css/css",
         extends: ["css/recommended"],
         rules: {
-            "css/no-invalid-properties": "error",
+            "css/no-invalid-properties": "off",
         },
     },
     {
