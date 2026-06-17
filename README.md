@@ -73,30 +73,30 @@ The application follows the **MVC pattern on both server and client**.
 
 ### Server MVC
 
-| File                                        | Responsibility                                                      |
-| ------------------------------------------- | ------------------------------------------------------------------- |
-| `src/server/app.js`                         | Express app setup — middleware, routes, static files, error handler |
-| `src/server/server.js`                      | Process entry point — DB init and `app.listen`                      |
-| `src/server/routes/notesRoutes.js`          | API route definitions for `/api/notes`                              |
-| `src/server/controllers/notesController.js` | HTTP request validation and response formatting                     |
-| `src/server/services/noteService.js`        | Business logic between controller and model                         |
-| `src/server/models/noteModel.js`            | SQL queries and data mapping                                        |
-| `src/server/db/database.js`                 | SQLite connection, query helpers, schema init                       |
-| `src/server/middleware/errorHandler.js`     | Global error handler                                                |
-| `src/server/utils/responseHandler.js`       | Consistent API response helpers                                     |
-| `src/server/utils/validators.js`            | Strict typed input validators                                       |
+| File                                         | Responsibility                                                      |
+| -------------------------------------------- | ------------------------------------------------------------------- |
+| `code/server/app.js`                         | Express app setup — middleware, routes, static files, error handler |
+| `code/server/server.js`                      | Process entry point — DB init and `app.listen`                      |
+| `code/server/routes/notesRoutes.js`          | API route definitions for `/api/notes`                              |
+| `code/server/controllers/notesController.js` | HTTP request validation and response formatting                     |
+| `code/server/services/noteService.js`        | Business logic between controller and model                         |
+| `code/server/models/noteModel.js`            | SQL queries and data mapping                                        |
+| `code/server/db/database.js`                 | SQLite connection, query helpers, schema init                       |
+| `code/server/middleware/errorHandler.js`     | Global error handler                                                |
+| `code/server/utils/responseHandler.js`       | Consistent API response helpers                                     |
+| `code/server/utils/validators.js`            | Strict typed input validators                                       |
 
 ### Client MVC
 
-| File                                                | Responsibility                                      |
-| --------------------------------------------------- | --------------------------------------------------- |
-| `src/client/scripts/main.js`                        | Client bootstrap — wires view and controller        |
-| `src/client/scripts/controllers/notesController.js` | UI state management and event orchestration         |
-| `src/client/scripts/views/notesView.js`             | Handlebars template rendering and DOM event binding |
-| `src/client/scripts/models/notesApi.js`             | All `fetch` calls to the server API                 |
-| `src/client/scripts/theme.js`                       | Dark/light mode logic                               |
+| File                                                 | Responsibility                                      |
+| ---------------------------------------------------- | --------------------------------------------------- |
+| `code/public/scripts/main.js`                        | Client bootstrap — wires view and controller        |
+| `code/public/scripts/controllers/notesController.js` | UI state management and event orchestration         |
+| `code/public/scripts/views/notesView.js`             | Handlebars template rendering and DOM event binding |
+| `code/public/scripts/models/notesApi.js`             | All `fetch` calls to the server API                 |
+| `code/public/scripts/theme.js`                       | Dark/light mode logic                               |
 
-> Handlebars templates are defined inline in `src/client/index.html` and compiled at runtime via CDN.
+> Handlebars templates are defined inline in `code/public/index.html` and compiled at runtime via CDN.
 
 ---
 
@@ -108,8 +108,8 @@ todo/
 │   └── notes.db
 ├── scripts/
 │   └── smoke-test.mjs
-├── src/
-│   ├── client/
+├── code/
+│   ├── public/
 │   │   ├── index.html
 │   │   ├── global.css
 │   │   └── scripts/
