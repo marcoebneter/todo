@@ -12,6 +12,8 @@
         "backend:watch": "nodemon --watch src/server --watch src/client --ext js,mjs,cjs,html,css src/server/server.js",
         "frontend:live": "browser-sync start --proxy \"http://localhost:3000\" --files \"src/client/**/*\" --port 3001 --no-ui",
         "smoke": "node scripts/smoke-test.mjs",
+        "test:server": "vitest run tests",
+        "test:server:watch": "vitest tests",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "lint-staged": "lint-staged",
@@ -30,13 +32,15 @@
         "@html-eslint/eslint-plugin": "^0.60.0",
         "@html-eslint/parser": "^0.60.0",
         "browser-sync": "^3.0.3",
-        "concurrently": "^9.2.1",
+        "concurrently": "^10.0.3",
         "eslint": "^10.2.0",
         "globals": "^17.5.0",
         "husky": "^9.1.7",
         "lint-staged": "^17.0.2",
         "nodemon": "^3.1.14",
-        "prettier": "^3.8.3"
+        "prettier": "^3.8.3",
+        "supertest": "^7.1.4",
+        "vitest": "^4.1.9"
     },
     "dependencies": {
         "express": "^5.2.1",

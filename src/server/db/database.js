@@ -6,11 +6,19 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const dataDir = path.join(__dirname, "..", "..", "..", "data");
-const dbPath = path.join(dataDir, "notes.db");
 const sqlite = sqlite3.verbose();
 
 let db;
+
+function resolveDbPath() {
+    if (process.env.NOTES_DB_PATH) {
+        return path.isAbsolute(process.env.NOTES_DB_PATH)
+            ? process.env.NOTES_DB_PATH
+            : path.join(process.cwd(), process.env.NOTES_DB_PATH);
+    }
+
+    return path.join(__dirname, "..", "..", "..", "data", "notes.db");
+}
 
 function getDb() {
     if (!db) {
@@ -67,7 +75,12 @@ function all(sql, params = []) {
 }
 
 async function init() {
-    await mkdir(dataDir, { recursive: true });
+    if (db) {
+        return;
+    }
+
+    const dbPath = resolveDbPath();
+    await mkdir(path.dirname(dbPath), { recursive: true });
     db = new sqlite.Database(dbPath);
 
     await run(`
@@ -83,12 +96,30 @@ async function init() {
     `);
 }
 
+function close() {
+    if (!db) {
+        return Promise.resolve();
+    }
+
+    return new Promise((resolve, reject) => {
+        db.close((error) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+
+            db = undefined;
+            resolve();
+        });
+    });
+}
+
 const Database = {
     init,
+    close,
     run,
     get,
     all,
-    dbPath,
 };
 
 export default Database;
