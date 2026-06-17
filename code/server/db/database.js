@@ -89,6 +89,7 @@ async function init() {
             title TEXT NOT NULL CHECK(length(trim(title)) > 0),
             content TEXT NOT NULL DEFAULT '',
             completed INTEGER NOT NULL DEFAULT 0 CHECK(completed IN (0, 1)),
+            priority INTEGER NOT NULL DEFAULT 2 CHECK(priority IN (1, 2, 3)),
             created_at TEXT NOT NULL DEFAULT (datetime('now')),
             updated_at TEXT NOT NULL DEFAULT (datetime('now')),
             deleted_at TEXT

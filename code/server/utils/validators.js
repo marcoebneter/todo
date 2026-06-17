@@ -76,4 +76,26 @@ function parseOptionalCompleted(value) {
     return { ok: true, value };
 }
 
-export { parseId, parseRequiredTitle, parseOptionalContent, parseOptionalCompleted };
+/**
+ * Parse an optional priority value (1-3).
+ * @param {any} value - The priority value to parse
+ * @returns {Object} - Result object with ok flag and value or error details
+ */
+function parseOptionalPriority(value) {
+    if (value === undefined) {
+        return { ok: true, value: 2 }; // Default to medium priority
+    }
+
+    const priority = Number(value);
+    if (!Number.isInteger(priority) || priority < 1 || priority > 3) {
+        return {
+            ok: false,
+            message: "Priority must be 1, 2, or 3.",
+            details: { field: "priority" },
+        };
+    }
+
+    return { ok: true, value: priority };
+}
+
+export { parseId, parseRequiredTitle, parseOptionalContent, parseOptionalCompleted, parseOptionalPriority };

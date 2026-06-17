@@ -22,11 +22,12 @@ class NoteService {
      * Create a new note.
      * @param {string} title - Note title (required, non-empty)
      * @param {string} content - Note content (optional)
+     * @param {number} priority - Note priority 1-3 (optional, default 2)
      * @returns {Promise<Object>} - Created note object
      * @throws {Error} - If creation fails
      */
-    async createNote(title, content = "") {
-        return await NoteModel.create({ title, content });
+    async createNote(title, content = "", priority = 2) {
+        return await NoteModel.create({ title, content, priority });
     }
 
     /**
@@ -35,11 +36,12 @@ class NoteService {
      * @param {string} title - New title (required, non-empty)
      * @param {string} content - New content
      * @param {boolean} completed - New completed status
+     * @param {number} priority - New priority 1-3
      * @returns {Promise<Object|null>} - Updated note or null if not found
      * @throws {Error} - If update fails
      */
-    async updateNote(id, title, content = "", completed = false) {
-        return await NoteModel.replace(id, { title, content, completed });
+    async updateNote(id, title, content = "", completed = false, priority = 2) {
+        return await NoteModel.replace(id, { title, content, completed, priority });
     }
 
     /**

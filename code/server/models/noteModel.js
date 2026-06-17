@@ -17,6 +17,7 @@ function mapNote(row) {
         title: row.title,
         content: row.content,
         completed: Boolean(row.completed),
+        priority: row.priority || 2,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
     };
@@ -24,7 +25,7 @@ function mapNote(row) {
 
 async function findById(id) {
     const row = await Database.get(
-        `SELECT id, title, content, completed, created_at, updated_at
+        `SELECT id, title, content, completed, priority, created_at, updated_at
          FROM notes
          WHERE id = ? AND deleted_at IS NULL`,
         [id],
@@ -41,7 +42,7 @@ async function list({ sort = "oldest", activeOnly = false }) {
     }
 
     const rows = await Database.all(
-        `SELECT id, title, content, completed, created_at, updated_at
+        `SELECT id, title, content, completed, priority, created_at, updated_at
          FROM notes
          WHERE ${whereParts.join(" AND ")}
          ORDER BY datetime(created_at) ${sort === "oldest" ? "ASC" : "DESC"}, id ASC`,
@@ -50,22 +51,22 @@ async function list({ sort = "oldest", activeOnly = false }) {
     return rows.map(mapNote);
 }
 
-async function create({ title, content }) {
+async function create({ title, content, priority = 2 }) {
     const result = await Database.run(
-        `INSERT INTO notes (title, content, completed, created_at, updated_at)
-         VALUES (?, ?, 0, datetime('now'), datetime('now'))`,
-        [title, content],
+        `INSERT INTO notes (title, content, priority, completed, created_at, updated_at)
+         VALUES (?, ?, ?, 0, datetime('now'), datetime('now'))`,
+        [title, content, priority],
     );
 
     return findById(result.lastID);
 }
 
-async function replace(id, { title, content, completed }) {
+async function replace(id, { title, content, completed, priority = 2 }) {
     const result = await Database.run(
         `UPDATE notes
-         SET title = ?, content = ?, completed = ?, updated_at = datetime('now')
+         SET title = ?, content = ?, completed = ?, priority = ?, updated_at = datetime('now')
          WHERE id = ? AND deleted_at IS NULL`,
-        [title, content, completed ? 1 : 0, id],
+        [title, content, completed ? 1 : 0, priority, id],
     );
 
     return result.changes === 0 ? null : findById(id);
@@ -88,6 +89,11 @@ async function patch(id, payload) {
     if (Object.hasOwn(payload, "content")) {
         updates.push("content = ?");
         params.push(payload.content);
+    }
+
+    if (Object.hasOwn(payload, "priority")) {
+        updates.push("priority = ?");
+        params.push(payload.priority);
     }
 
     if (updates.length === 0) {

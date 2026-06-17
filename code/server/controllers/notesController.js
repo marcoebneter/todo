@@ -5,8 +5,19 @@
  */
 
 import NoteService from "../services/noteService.js";
-import { successResponse, createdResponse, errorResponse, notFoundResponse } from "../utils/responseHandler.js";
-import { parseId, parseRequiredTitle, parseOptionalContent, parseOptionalCompleted } from "../utils/validators.js";
+import { successResponse, createdResponse, errorResponse } from "../utils/responseHandler.js";
+import {
+    parseRequiredTitle,
+    parseOptionalContent,
+    parseOptionalCompleted,
+    parseOptionalPriority,
+} from "../utils/validators.js";
+import {
+    ensureValidId,
+    handleValidationResult,
+    buildPatchPayload,
+    sendNotFoundIfMissing,
+} from "./controllerHelpers.js";
 
 class NotesController {
     constructor() {
@@ -36,30 +47,23 @@ class NotesController {
 
     /**
      * POST /api/notes - Create a new note.
-     * Body: { title: string (required), content?: string }
+     * Body: { title: string (required), content?: string, priority?: 1-3 }
      */
     async create(req, res, next) {
         try {
             const titleResult = parseRequiredTitle(req.body.title);
             const contentResult = parseOptionalContent(req.body.content);
+            const priorityResult = parseOptionalPriority(req.body.priority);
 
-            if (!titleResult.ok) {
-                return errorResponse(
-                    res,
-                    { code: "VALIDATION_ERROR", message: titleResult.message, details: titleResult.details },
-                    400,
-                );
-            }
+            if (!handleValidationResult(res, titleResult)) return;
+            if (!handleValidationResult(res, contentResult)) return;
+            if (!handleValidationResult(res, priorityResult)) return;
 
-            if (!contentResult.ok) {
-                return errorResponse(
-                    res,
-                    { code: "VALIDATION_ERROR", message: contentResult.message, details: contentResult.details },
-                    400,
-                );
-            }
-
-            const note = await this.noteService.createNote(titleResult.value, contentResult.value);
+            const note = await this.noteService.createNote(
+                titleResult.value,
+                contentResult.value,
+                priorityResult.value,
+            );
             createdResponse(res, note);
         } catch (error) {
             next(error);
@@ -69,57 +73,32 @@ class NotesController {
     /**
      * PUT /api/notes/:id - Replace an entire note.
      * Params: id (positive integer)
-     * Body: { title: string (required), content?: string, completed?: boolean }
+     * Body: { title: string (required), content?: string, completed?: boolean, priority?: 1-3 }
      */
     async replace(req, res, next) {
         try {
-            const id = parseId(req.params.id);
+            const id = ensureValidId(req.params.id, res);
+            if (id === null) return;
+
             const titleResult = parseRequiredTitle(req.body.title);
             const contentResult = parseOptionalContent(req.body.content);
             const completedResult = parseOptionalCompleted(req.body.completed);
+            const priorityResult = parseOptionalPriority(req.body.priority);
 
-            if (!id) {
-                return errorResponse(
-                    res,
-                    { code: "VALIDATION_ERROR", message: "Invalid note id.", details: { field: "id" } },
-                    400,
-                );
-            }
-
-            if (!titleResult.ok) {
-                return errorResponse(
-                    res,
-                    { code: "VALIDATION_ERROR", message: titleResult.message, details: titleResult.details },
-                    400,
-                );
-            }
-
-            if (!contentResult.ok) {
-                return errorResponse(
-                    res,
-                    { code: "VALIDATION_ERROR", message: contentResult.message, details: contentResult.details },
-                    400,
-                );
-            }
-
-            if (!completedResult.ok) {
-                return errorResponse(
-                    res,
-                    { code: "VALIDATION_ERROR", message: completedResult.message, details: completedResult.details },
-                    400,
-                );
-            }
+            if (!handleValidationResult(res, titleResult)) return;
+            if (!handleValidationResult(res, contentResult)) return;
+            if (!handleValidationResult(res, completedResult)) return;
+            if (!handleValidationResult(res, priorityResult)) return;
 
             const note = await this.noteService.updateNote(
                 id,
                 titleResult.value,
                 contentResult.value,
                 completedResult.value,
+                priorityResult.value,
             );
 
-            if (!note) {
-                return notFoundResponse(res, "Note");
-            }
+            if (sendNotFoundIfMissing(res, "Note", note)) return;
 
             successResponse(res, note);
         } catch (error) {
@@ -130,79 +109,31 @@ class NotesController {
     /**
      * PATCH /api/notes/:id - Partially update a note.
      * Params: id (positive integer)
-     * Body: { title?: string, content?: string, completed?: boolean }
+     * Body: { title?: string, content?: string, completed?: boolean, priority?: 1-3 }
      */
     async patch(req, res, next) {
         try {
-            const id = parseId(req.params.id);
+            const id = ensureValidId(req.params.id, res);
+            if (id === null) return;
 
-            if (!id) {
-                return errorResponse(
-                    res,
-                    { code: "VALIDATION_ERROR", message: "Invalid note id.", details: { field: "id" } },
-                    400,
-                );
-            }
+            const buildResult = buildPatchPayload(req.body, res);
+            if (!buildResult.ok) return;
 
-            const payload = {};
-
-            if (Object.hasOwn(req.body, "completed")) {
-                const completedResult = parseOptionalCompleted(req.body.completed);
-                if (!completedResult.ok) {
-                    return errorResponse(
-                        res,
-                        {
-                            code: "VALIDATION_ERROR",
-                            message: completedResult.message,
-                            details: completedResult.details,
-                        },
-                        400,
-                    );
-                }
-                payload.completed = completedResult.value;
-            }
-
-            if (Object.hasOwn(req.body, "title")) {
-                const titleResult = parseRequiredTitle(req.body.title);
-                if (!titleResult.ok) {
-                    return errorResponse(
-                        res,
-                        { code: "VALIDATION_ERROR", message: titleResult.message, details: titleResult.details },
-                        400,
-                    );
-                }
-                payload.title = titleResult.value;
-            }
-
-            if (Object.hasOwn(req.body, "content")) {
-                const contentResult = parseOptionalContent(req.body.content);
-                if (!contentResult.ok) {
-                    return errorResponse(
-                        res,
-                        { code: "VALIDATION_ERROR", message: contentResult.message, details: contentResult.details },
-                        400,
-                    );
-                }
-                payload.content = contentResult.value;
-            }
-
-            const result = await this.noteService.patchNote(id, payload);
-
-            if (!result.hasUpdates) {
+            if (!buildResult.hasUpdates) {
                 return errorResponse(
                     res,
                     {
                         code: "VALIDATION_ERROR",
                         message: "No valid fields to update.",
-                        details: { fields: ["title", "content", "completed"] },
+                        details: { fields: ["title", "content", "completed", "priority"] },
                     },
                     400,
                 );
             }
 
-            if (!result.note) {
-                return notFoundResponse(res, "Note");
-            }
+            const result = await this.noteService.patchNote(id, buildResult.payload);
+
+            if (sendNotFoundIfMissing(res, "Note", result.note)) return;
 
             successResponse(res, result.note);
         } catch (error) {
@@ -217,20 +148,13 @@ class NotesController {
      */
     async softDelete(req, res, next) {
         try {
-            const id = parseId(req.params.id);
-
-            if (!id) {
-                return errorResponse(
-                    res,
-                    { code: "VALIDATION_ERROR", message: "Invalid note id.", details: { field: "id" } },
-                    400,
-                );
-            }
+            const id = ensureValidId(req.params.id, res);
+            if (id === null) return;
 
             const deleted = await this.noteService.deleteNote(id);
 
             if (!deleted) {
-                return notFoundResponse(res, "Note");
+                return sendNotFoundIfMissing(res, "Note", deleted);
             }
 
             res.status(204).end();
