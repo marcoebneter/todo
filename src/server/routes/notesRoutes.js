@@ -1,0 +1,13 @@
+import { Router } from "express";
+import NotesController from "../controllers/notesController.js";
+
+const router = Router();
+const controller = new NotesController();
+
+router.get("/", (req, res, next) => controller.list(req, res, next));
+router.post("/", (req, res, next) => controller.create(req, res, next));
+router.put("/:id", (req, res, next) => controller.replace(req, res, next));
+router.patch("/:id", (req, res, next) => controller.patch(req, res, next));
+router.delete("/:id", (req, res, next) => controller.softDelete(req, res, next));
+
+export default router;

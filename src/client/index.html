@@ -7,7 +7,7 @@
         <link
             rel="icon"
             href="favicon.png"
-            type="image/x-icon"
+            type="image/png"
         />
         <link rel="stylesheet" href="global.css"/>
 
@@ -17,7 +17,7 @@
             crossorigin="anonymous"
             defer
         ></script>
-        <script src="scripts/index.js" type="module" defer></script>
+        <script src="scripts/main.js" type="module" defer></script>
         <script src="scripts/theme.js" type="module" defer></script>
     </head>
     <body>
@@ -47,7 +47,7 @@
                     placeholder="Notiz oder Aufgabe"
                 ></textarea>
                 <div class="form-actions">
-                    <button type="submit" id="save-button">Speichern</button>
+                    <div id="save-button-mount"></div>
                     <button
                         type="button"
                         id="cancel-edit-button"
@@ -55,11 +55,7 @@
                         hidden
                     >Bearbeiten abbrechen</button>
                 </div>
-                <p
-                    id="form-error"
-                    class="error-message"
-                    role="alert"
-                ></p>
+                <div id="form-error-mount"></div>
             </form>
 
             <section class="toolbar" aria-label="Filter und Sortierung">
@@ -77,12 +73,48 @@
                 </label>
             </section>
 
-            <ul
-                id="notes-list"
-                class="notes-list"
-                aria-live="polite"
-            ></ul>
-            <p id="empty-state" class="empty-state">Keine offenen Notizen vorhanden.</p>
+            <div id="notes-mount" aria-live="polite"></div>
         </main>
+
+        <script id="save-button-template" type="text/x-handlebars-template">
+            <button type="submit" id="save-button">{{saveLabel}}</button>
+        </script>
+
+        <script id="form-error-template" type="text/x-handlebars-template">
+            <p id="form-error" class="error-message" role="alert">{{message}}</p>
+        </script>
+
+        <script id="notes-template" type="text/x-handlebars-template">
+            {{#if hasNotes}}
+                <ul id="notes-list" class="notes-list" aria-live="polite">
+                    {{#each notes}}
+                        <li class="note-item {{#if completed}}is-completed{{/if}}">
+                            <div class="note-header">
+                                <div class="note-title-row">
+                                    <input
+                                        type="checkbox"
+                                        data-action="toggle"
+                                        data-id="{{id}}"
+                                        {{#if completed}}checked{{/if}}
+                                        aria-label="Notiz als abgeschlossen markieren"
+                                    />
+                                    <h2>{{title}}</h2>
+                                </div>
+                                <small>Erstellt: {{createdAtLabel}}</small>
+                            </div>
+
+                            <p>{{contentLabel}}</p>
+
+                            <div class="note-actions">
+                                <button type="button" class="secondary" data-action="edit" data-id="{{id}}">Bearbeiten</button>
+                                <button type="button" class="danger" data-action="delete" data-id="{{id}}">Archivieren</button>
+                            </div>
+                        </li>
+                    {{/each}}
+                </ul>
+            {{else}}
+                <p id="empty-state" class="empty-state">Keine offenen Notizen vorhanden.</p>
+            {{/if}}
+        </script>
     </body>
 </html>

@@ -8,14 +8,18 @@
     "main": "node src/server/server.js",
     "scripts": {
         "start": "node src/server/server.js",
-        "start:watch": "node --watch src/server/server.js",
+        "dev": "concurrently -k -n BACKEND,VIEW -c cyan,magenta \"npm run backend:watch\" \"npm run frontend:live\"",
+        "backend:watch": "nodemon --watch src/server --watch src/client --ext js,mjs,cjs,html,css src/server/server.js",
+        "frontend:live": "browser-sync start --proxy \"http://localhost:3000\" --files \"src/client/**/*\" --port 3001 --no-ui",
         "smoke": "node scripts/smoke-test.mjs",
+        "test:server": "vitest run tests",
+        "test:server:watch": "vitest tests",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "lint-staged": "lint-staged",
         "format": "prettier --write \"**/*.{js,cjs,mjs,css,html,json,md}\"",
         "format:check": "prettier --check \"**/*.{js,cjs,mjs,css,html,json,md}\"",
-        "verify": "npm run lint && npm run smoke",
+        "verify": "npm run lint && npm run test:server && npm run smoke",
         "prepare": "husky"
     },
     "lint-staged": {
@@ -27,11 +31,16 @@
         "@eslint/js": "^10.0.1",
         "@html-eslint/eslint-plugin": "^0.60.0",
         "@html-eslint/parser": "^0.60.0",
+        "browser-sync": "^3.0.3",
+        "concurrently": "^10.0.3",
         "eslint": "^10.2.0",
         "globals": "^17.5.0",
         "husky": "^9.1.7",
         "lint-staged": "^17.0.2",
-        "prettier": "^3.8.3"
+        "nodemon": "^3.1.14",
+        "prettier": "^3.8.3",
+        "supertest": "^7.1.4",
+        "vitest": "^4.1.9"
     },
     "dependencies": {
         "express": "^5.2.1",

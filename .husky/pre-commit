@@ -1,4 +1,8 @@
 #!/usr/bin/env sh
 
-npm run lint-staged
+set -e
 
+npm run lint-staged
+npm run lint
+npm run test:server
+npm run smoke
