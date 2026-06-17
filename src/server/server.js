@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import database from "./db/database.js";
+import Database from "./db/database.js";
 import notesRoutes from "./routes/notesRoutes.js";
 import errorHandler from "./middleware/errorHandler.js";
 
@@ -16,7 +16,7 @@ app.use(express.static(path.join(__dirname, "..", "client")));
 app.use("/api/notes", notesRoutes);
 app.use(errorHandler);
 
-await database.init();
+await Database.init();
 
 app.listen(port, () => {
     console.log(`Todo app listening at http://localhost:${port}`);

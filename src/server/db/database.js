@@ -83,7 +83,7 @@ async function init() {
     `);
 }
 
-const database = {
+const Database = {
     init,
     run,
     get,
@@ -91,4 +91,4 @@ const database = {
     dbPath,
 };
 
-export default database;
+export default Database;
