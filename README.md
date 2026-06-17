@@ -1,102 +1,235 @@
-# Todo / Notizen App
+<div align="center">
 
-Eine Todo- und Notizen-App mit Express, SQLite und Handlebars-Rendering im Browser.
+<h1>📝 Todo / Notes App</h1>
 
-## Zielarchitektur (MVC auf Server und Client)
+<p>A full-stack Todo and Notes application built with <strong>Express</strong>, <strong>SQLite</strong> and <strong>Handlebars</strong> — structured around the <strong>MVC pattern</strong> on both server and client.</p>
 
-Die Anwendung nutzt MVC auf beiden Seiten:
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org)
+[![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white)](https://expressjs.com)
+[![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org)
+[![Handlebars](https://img.shields.io/badge/Handlebars-CDN-f0772b?logo=handlebarsdotjs&logoColor=white)](https://handlebarsjs.com)
+[![Vitest](https://img.shields.io/badge/Vitest-tests-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev)
+[![ESLint](https://img.shields.io/badge/ESLint-linted-4B32C3?logo=eslint&logoColor=white)](https://eslint.org)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](LICENSE.md)
 
-- **Server MVC**
-    - `src/server/routes/notesRoutes.js`: API-Endpunkte und Routing
-    - `src/server/controllers/notesController.js`: HTTP-Validierung und Antwortlogik
-    - `src/server/services/noteService.js`: Business-Logik zwischen Controller und Model
-    - `src/server/models/noteModel.js`: SQL-nahe Datenzugriffe
-    - `src/server/db/database.js`: SQLite Initialisierung und Query-Helper
-- **Client MVC**
-    - `src/client/scripts/models/notesApi.js`: API-Kommunikation (`fetch`)
-    - `src/client/scripts/views/notesView.js`: UI-Rendering mit Handlebars (CDN)
-    - `src/client/scripts/controllers/notesController.js`: UI-State und Event-Orchestrierung
-    - `src/client/scripts/main.js`: Client-Bootstrap
+</div>
 
-Server-Bootstrap ist separat gehalten:
+---
 
-- `src/server/app.js`: Express App-Konfiguration (Middleware, Static Files, Routes, Error Handler)
-- `src/server/server.js`: Prozessstart (`Database.init`, `app.listen`)
+## 📋 Table of Contents
 
-## Features
+- [About the Project](#-about-the-project)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Available Scripts](#-available-scripts)
+- [API Reference](#-api-reference)
+- [Error Format](#-error-format)
+- [Testing](#-testing)
+- [Git Hooks](#-git-hooks)
+- [License](#-license)
 
-- Notizen erstellen, bearbeiten, abhaken und archivieren
-- Sortierung (`oldest` / `newest`)
-- Filter fuer aktive Notizen (`activeOnly`)
-- Soft Delete (Eintraege werden markiert statt hart geloescht)
-- Persistenz in `data/notes.db`
-- Strukturierte API-Fehlerantworten (Option A)
+---
 
-## Technologie
+## 🧩 About the Project
 
-- Node.js + Express
-- SQLite (`sqlite3`)
-- Vanilla JS Modules im Client
-- Handlebars via CDN fuer dynamisches Rendering
+A lightweight but well-structured notes and todo application. Notes can be created, edited, toggled as completed, and soft-deleted (archived). The app demonstrates the **MVC pattern** on both the server (Express) and the client (plain JS modules + Handlebars templates).
 
-## Voraussetzungen
+---
 
-- Node.js 18+
+## ✨ Features
 
-## Installation
+- ✅ Create, edit, complete, and archive notes
+- 🔃 Sort notes by oldest or newest
+- 🔍 Filter to show only active (incomplete) notes
+- 🗃️ Soft Delete — entries are archived, not permanently removed
+- 💾 Persistent storage via SQLite (`data/notes.db`)
+- 🌙 Dark/light mode toggle with OS preference support
+- 🛡️ Structured API error responses (Option A format)
+- 🧪 Vitest API tests + smoke tests for full contract coverage
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer            | Technology          |
+| ---------------- | ------------------- |
+| Runtime          | Node.js 18+         |
+| Server Framework | Express 5           |
+| Database         | SQLite (`sqlite3`)  |
+| Client Rendering | Handlebars (CDN)    |
+| Client Scripting | Plain JS ES Modules |
+| Testing          | Vitest + Supertest  |
+| Linting          | ESLint + Prettier   |
+| Git Hooks        | Husky + lint-staged |
+
+---
+
+## 🏗️ Architecture
+
+The application follows the **MVC pattern on both server and client**.
+
+### Server MVC
+
+| File                                        | Responsibility                                                      |
+| ------------------------------------------- | ------------------------------------------------------------------- |
+| `src/server/app.js`                         | Express app setup — middleware, routes, static files, error handler |
+| `src/server/server.js`                      | Process entry point — DB init and `app.listen`                      |
+| `src/server/routes/notesRoutes.js`          | API route definitions for `/api/notes`                              |
+| `src/server/controllers/notesController.js` | HTTP request validation and response formatting                     |
+| `src/server/services/noteService.js`        | Business logic between controller and model                         |
+| `src/server/models/noteModel.js`            | SQL queries and data mapping                                        |
+| `src/server/db/database.js`                 | SQLite connection, query helpers, schema init                       |
+| `src/server/middleware/errorHandler.js`     | Global error handler                                                |
+| `src/server/utils/responseHandler.js`       | Consistent API response helpers                                     |
+| `src/server/utils/validators.js`            | Strict typed input validators                                       |
+
+### Client MVC
+
+| File                                                | Responsibility                                      |
+| --------------------------------------------------- | --------------------------------------------------- |
+| `src/client/scripts/main.js`                        | Client bootstrap — wires view and controller        |
+| `src/client/scripts/controllers/notesController.js` | UI state management and event orchestration         |
+| `src/client/scripts/views/notesView.js`             | Handlebars template rendering and DOM event binding |
+| `src/client/scripts/models/notesApi.js`             | All `fetch` calls to the server API                 |
+| `src/client/scripts/theme.js`                       | Dark/light mode logic                               |
+
+> Handlebars templates are defined inline in `src/client/index.html` and compiled at runtime via CDN.
+
+---
+
+## 📁 Project Structure
+
+```text
+todo/
+├── data/
+│   └── notes.db
+├── scripts/
+│   └── smoke-test.mjs
+├── src/
+│   ├── client/
+│   │   ├── index.html
+│   │   ├── global.css
+│   │   └── scripts/
+│   │       ├── controllers/
+│   │       │   └── notesController.js
+│   │       ├── models/
+│   │       │   └── notesApi.js
+│   │       ├── views/
+│   │       │   └── notesView.js
+│   │       ├── main.js
+│   │       └── theme.js
+│   └── server/
+│       ├── app.js
+│       ├── server.js
+│       ├── controllers/
+│       │   └── notesController.js
+│       ├── db/
+│       │   └── database.js
+│       ├── middleware/
+│       │   └── errorHandler.js
+│       ├── models/
+│       │   └── noteModel.js
+│       ├── routes/
+│       │   └── notesRoutes.js
+│       ├── services/
+│       │   └── noteService.js
+│       └── utils/
+│           ├── responseHandler.js
+│           └── validators.js
+└── tests/
+    └── notes.api.spec.js
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Node.js 18+](https://nodejs.org)
+
+### Installation
 
 ```bash
+git clone <repo-url>
+cd todo
 npm install
 ```
 
-## App starten
+### Run the app
 
 ```bash
 npm start
 ```
 
-Standard-URL: `http://localhost:3000`
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Entwicklung (Auto Reload)
+### Development mode (auto reload)
 
 ```bash
 npm run dev
 ```
 
-- `backend:watch`: startet Server mit `nodemon`
-- `frontend:live`: startet `browser-sync` Proxy auf `http://localhost:3001`
+| Process      | URL                     | Description                          |
+| ------------ | ----------------------- | ------------------------------------ |
+| Backend      | `http://localhost:3000` | Express server with `nodemon`        |
+| Live Preview | `http://localhost:3001` | `browser-sync` proxy with hot reload |
 
-## Qualitaetschecks
+---
 
-```bash
-npm run lint
-npm run test:server
-npm run smoke
-npm run verify
+## 📜 Available Scripts
+
+| Script                      | Description                                         |
+| --------------------------- | --------------------------------------------------- |
+| `npm start`                 | Start the production server                         |
+| `npm run dev`               | Start backend + live reload proxy                   |
+| `npm run lint`              | Run ESLint checks                                   |
+| `npm run lint:fix`          | Auto-fix ESLint issues                              |
+| `npm run format`            | Format all files with Prettier                      |
+| `npm run format:check`      | Check formatting without writing                    |
+| `npm run test:server`       | Run Vitest API tests                                |
+| `npm run test:server:watch` | Run Vitest in watch mode                            |
+| `npm run smoke`             | Run end-to-end smoke test                           |
+| `npm run verify`            | Full quality gate: `lint` + `test:server` + `smoke` |
+
+---
+
+## 📡 API Reference
+
+Base URL: `http://localhost:3000/api`
+
+| Method   | Endpoint                                            | Description                          |
+| -------- | --------------------------------------------------- | ------------------------------------ |
+| `GET`    | `/notes?sort=oldest\|newest&activeOnly=true\|false` | List all notes with optional filters |
+| `POST`   | `/notes`                                            | Create a new note                    |
+| `PUT`    | `/notes/:id`                                        | Replace a full note                  |
+| `PATCH`  | `/notes/:id`                                        | Partially update a note              |
+| `DELETE` | `/notes/:id`                                        | Soft delete (archive) a note         |
+
+### Request body — POST / PUT
+
+```json
+{
+    "title": "My Note",
+    "content": "Optional description",
+    "completed": false
+}
 ```
 
-- `lint`: ESLint Checks
-- `test:server`: Vitest API-Tests fuer den Server (Supertest + isolierte Testdatenbank)
-- `smoke`: End-to-End Smoke Test gegen laufenden Server
-- `verify`: `lint` + `test:server` + `smoke`
+---
 
-## API Uebersicht
+## 🛡️ Error Format
 
-- `GET /api/notes?sort=oldest|newest&activeOnly=true|false`
-- `POST /api/notes`
-- `PUT /api/notes/:id`
-- `PATCH /api/notes/:id`
-- `DELETE /api/notes/:id`
-
-## API Fehlerformat (Option A)
-
-Alle Fehlerantworten folgen diesem Format:
+All error responses follow the **Option A** structure:
 
 ```json
 {
     "error": {
         "code": "VALIDATION_ERROR",
-        "message": "Title is required.",
+        "message": "Title must be a string.",
         "details": {
             "field": "title"
         }
@@ -104,66 +237,74 @@ Alle Fehlerantworten folgen diesem Format:
 }
 ```
 
-Verwendete Codes:
+| Code               | HTTP Status | When                            |
+| ------------------ | ----------- | ------------------------------- |
+| `VALIDATION_ERROR` | `400`       | Invalid or missing input fields |
+| `NOT_FOUND`        | `404`       | Resource does not exist         |
+| `INTERNAL_ERROR`   | `500`       | Unexpected server error         |
 
-- `VALIDATION_ERROR`
-- `NOT_FOUND`
-- `INTERNAL_ERROR`
+---
 
-Hinweis: HTTP-Statuscodes bleiben kompatibel zum bisherigen Verhalten (z. B. `201`, `200`, `204`, `400`, `404`).
+## 🧪 Testing
 
-## Smoke Test Abdeckung
+### Vitest API Tests
 
-`scripts/smoke-test.mjs` prueft:
+Unit/integration tests for the server API using **Vitest** + **Supertest**.
+Each test run uses an isolated SQLite database (`data/notes.vitest.db`) that is cleaned up after the suite.
 
-- gueltiger Create/Patch/Delete Flow
-- Filter-Verhalten (`activeOnly=true`)
-- Soft Delete Sichtbarkeit
-- Validation Errors mit Option-A-Shape
-- Not-Found Fehler mit Option-A-Shape
-
-## Handlebars im Client
-
-Handlebars wird ueber CDN in `src/client/index.html` geladen.
-Templates sind in derselben HTML-Datei abgelegt und werden in `notesView` kompiliert:
-
-- `#notes-template`
-- `#form-error-template`
-- `#save-button-template`
-
-## Projektstruktur (Kurz)
-
-```text
-src/
-  client/
-	index.html
-	scripts/
-	  controllers/notesController.js
-	  models/notesApi.js
-	  views/notesView.js
-	  main.js
-	  theme.js
-  server/
-	app.js
-	server.js
-	routes/notesRoutes.js
-	controllers/notesController.js
-	services/noteService.js
-	models/noteModel.js
-	middleware/errorHandler.js
-	db/database.js
-	utils/responseHandler.js
-	utils/validators.js
-scripts/
-  smoke-test.mjs
+```bash
+npm run test:server
 ```
 
-## Git Hooks
+Coverage includes:
 
-Das Projekt verwendet Husky + lint-staged.
+- ✅ Successful note creation (`201`)
+- ✅ Option A `VALIDATION_ERROR` for invalid title type
+- ✅ Option A `VALIDATION_ERROR` for non-boolean `completed` in `PUT`
+- ✅ Option A `NOT_FOUND` for unknown note `PATCH`
+- ✅ Soft delete hides note from list endpoint
 
-Falls Hooks lokal fehlen:
+### Smoke Test
+
+End-to-end test that boots the real server, runs all API flows, and shuts down.
+
+```bash
+npm run smoke
+```
+
+Verifies:
+
+- Full create → patch → filter → delete → list flow
+- `VALIDATION_ERROR` shape on bad input (title type, completed type, empty patch, invalid id)
+- `NOT_FOUND` shape for unknown resource
+- `activeOnly` filter excludes completed notes
+- Soft-deleted notes do not appear in any list
+
+---
+
+## 🔗 Git Hooks
+
+The project uses [Husky](https://typicode.github.io/husky) and [lint-staged](https://github.com/lint-staged/lint-staged).
+
+| Hook         | Runs                                             |
+| ------------ | ------------------------------------------------ |
+| `pre-commit` | `lint-staged` → `lint` → `test:server` → `smoke` |
+| `pre-push`   | `verify` (`lint` + `test:server` + `smoke`)      |
+
+If hooks are missing locally:
 
 ```bash
 npm run prepare
 ```
+
+---
+
+## 📄 License
+
+Distributed under the ISC License. See [`LICENSE.md`](LICENSE.md) for more information.
+
+---
+
+<div align="center">
+  <p>Made with ❤️ for the CAS Frontend Engineering course</p>
+</div>
