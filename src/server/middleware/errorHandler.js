@@ -11,9 +11,9 @@ import { errorResponse } from "../utils/responseHandler.js";
  * @param {Error} error - The error object
  * @param {Express.Request} req - Express request object
  * @param {Express.Response} res - Express response object
- * @param {Function} next - Express next function
+ * @param {Function} _next - Express next function
  */
-function errorHandler(error, req, res, next) {
+function errorHandler(error, req, res, _next) {
     console.error("Error:", error.message || error);
 
     const statusCode = error.statusCode || 500;
