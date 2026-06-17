@@ -1,6 +1,8 @@
 import Database from "./code/db/database.js";
 import app from "./code/app.js";
-const port = Number(process.env.PORT) || 3000;
+import appConfig from "./code/conf.js";
+
+const port = appConfig.server.port;
 
 await Database.init();
 

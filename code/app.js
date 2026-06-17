@@ -6,11 +6,14 @@ import notesRoutes from "./routes/notes-routes.js";
 import pageRoutes from "./routes/page-routes.js";
 import errorHandler from "./middleware/error-handler.js";
 import { handlebarHelpers } from "./utils/handlebar-util.js";
+import appConfig from "./conf.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+app.locals.assets = appConfig.assets;
 
 app.engine(
     "hbs",
