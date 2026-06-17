@@ -1,0 +1,48 @@
+@import "themes.css";
+@import "header.css";
+@import "content.css";
+@import "footer.css";
+@import "components/buttons.css";
+@import "components/inputs.css";
+@import "components/toolbars.css";
+@import "components/notes.css";
+
+* {
+    box-sizing: border-box;
+    font-family: "Source Code Pro", monospace;
+}
+
+body {
+    margin: 0;
+    padding: 1rem;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.btn-theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+    background-color: var(--surface-color);
+}
+
+.btn-theme-toggle:hover {
+    background-color: var(--button-background-color);
+}
+
+.error-message {
+    margin: 0;
+    min-height: 1.2em;
+    color: #d92d20;
+}
+
+.empty-state {
+    margin: 0;
+    text-align: center;
+    color: var(--text-color-muted);
+}
+
+.visually-hidden {
+    display: none;
+}

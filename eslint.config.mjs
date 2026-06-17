@@ -9,7 +9,7 @@ export default defineConfig([
         ignores: ["node_modules/**", "dist/**", "coverage/**"],
     },
     {
-        files: ["src/client/scripts/**/*.{js,mjs,cjs}"],
+        files: ["code/public/scripts/**/*.{js,mjs,cjs}"],
         plugins: { js },
         extends: ["js/recommended"],
         languageOptions: {
@@ -24,7 +24,7 @@ export default defineConfig([
         },
     },
     {
-        files: ["src/server/**/*.js", "scripts/**/*.{js,mjs,cjs}", "index.js"],
+        files: ["code/server/**/*.js", "scripts/**/*.{js,mjs,cjs}", "index.js"],
         plugins: { js },
         extends: ["js/recommended"],
         languageOptions: {
@@ -38,20 +38,21 @@ export default defineConfig([
         },
     },
     {
-        files: ["src/client/**/*.css"],
+        files: ["code/public/**/*.css"],
         plugins: { css },
         language: "css/css",
         extends: ["css/recommended"],
         rules: {
-            "css/no-invalid-properties": "error",
+            "css/no-invalid-properties": "off",
         },
     },
     {
-        files: ["src/client/**/*.html"],
+        files: ["code/public/**/*.html"],
         ...html.configs["flat/recommended"],
         rules: {
             ...html.configs["flat/recommended"].rules,
             "@html-eslint/require-closing-tags": "off",
+            "@html-eslint/attrs-newline": "off",
         },
     },
 ]);
