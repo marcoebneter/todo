@@ -3,6 +3,7 @@ class NotesView {
         this.noteEditForm = document.getElementById("frm-note-edit");
         this.noteTitle = document.getElementById("note-title");
         this.noteContent = document.getElementById("note-content");
+        this.noteDueDate = document.getElementById("note-due-date");
         this.priorityEmojis = document.querySelectorAll(".priority-emoji");
         this.sortSelect = document.getElementById("sort-select");
         this.showCompletedCheckbox = document.getElementById("show-completed");
@@ -28,12 +29,24 @@ class NotesView {
         });
     }
 
+    formatDateOnly(value) {
+        if (!value) return "";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "";
+        return date.toLocaleDateString("de-CH", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        });
+    }
+
     bindFormSubmit(handler) {
         this.noteEditForm.addEventListener("submit", async (event) => {
             event.preventDefault();
             await handler({
                 title: this.noteTitle.value,
                 content: this.noteContent.value,
+                dueAt: this.noteDueDate.value || null,
             });
         });
     }
@@ -117,6 +130,7 @@ class NotesView {
         const templateNotes = notes.map((note) => ({
             ...note,
             createdAtLabel: this.formatDate(note.createdAt),
+            dueDateLabel: note.dueAt ? this.formatDateOnly(note.dueAt) : null,
             contentLabel: note.content || "(keine Beschreibung)",
             priorityClass: `priority-${note.priority || 2}`,
         }));
@@ -140,6 +154,7 @@ class NotesView {
         if (isEditing && note) {
             this.noteTitle.value = note.title;
             this.noteContent.value = note.content;
+            this.noteDueDate.value = note.dueAt || "";
             this.cancelEditButton.hidden = false;
             this.updatePriorityEmojis(selectedPriority);
             this.noteTitle.focus();
@@ -147,6 +162,7 @@ class NotesView {
         }
 
         this.noteEditForm.reset();
+        this.noteDueDate.value = "";
         this.cancelEditButton.hidden = true;
         this.updatePriorityEmojis(selectedPriority);
     }

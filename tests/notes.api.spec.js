@@ -35,7 +35,54 @@ describe("notes api", () => {
         expect(response.status).toBe(201);
         expect(response.body.title).toBe("Vitest Note");
         expect(response.body.completed).toBe(false);
+        // default priority should be 2 (medium)
+        expect(response.body.priority).toBe(2);
+        // due date is optional and should be null when not provided
+        expect(response.body.dueAt).toBeNull();
         expect(typeof response.body.id).toBe("number");
+    });
+
+    it("creates a note with due date and custom priority", async () => {
+        const due = "2026-06-18";
+        const response = await request(app).post("/api/notes").send({
+            title: "Due Note",
+            content: "has due date",
+            priority: 3,
+            dueAt: due,
+        });
+
+        expect(response.status).toBe(201);
+        expect(response.body.title).toBe("Due Note");
+        expect(response.body.priority).toBe(3);
+        expect(response.body.dueAt).toBe(due);
+    });
+
+    it("sorts notes by due date with undated notes last", async () => {
+        const later = await request(app).post("/api/notes").send({
+            title: "Later",
+            content: "later due date",
+            dueAt: "2026-06-20",
+        });
+
+        const undated = await request(app).post("/api/notes").send({
+            title: "No Due Date",
+            content: "no date",
+        });
+
+        const earlier = await request(app).post("/api/notes").send({
+            title: "Earlier",
+            content: "earlier due date",
+            dueAt: "2026-06-18",
+        });
+
+        expect(later.status).toBe(201);
+        expect(undated.status).toBe(201);
+        expect(earlier.status).toBe(201);
+
+        const listed = await request(app).get("/api/notes?sort=dueDate&activeOnly=false");
+
+        expect(listed.status).toBe(200);
+        expect(listed.body.map((note) => note.title)).toEqual(["Earlier", "Later", "No Due Date"]);
     });
 
     it("returns Option A validation error for non-string title", async () => {

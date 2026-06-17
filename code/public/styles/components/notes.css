@@ -17,12 +17,7 @@
     background: var(--surface-color);
 }
 
-.note-header {
-    justify-content: space-between;
-}
-
 .note-actions,
-.note-header,
 .note-title-row {
     display: flex;
     flex-wrap: wrap;
@@ -30,10 +25,38 @@
     align-items: center;
 }
 
+.note-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 0.55rem;
+    align-items: center;
+}
+
+.note-header > :first-child {
+    justify-self: start;
+}
+
+.note-header > :nth-child(2) {
+    justify-self: center;
+    text-align: center;
+}
+
+.note-header > :nth-child(3) {
+    justify-self: end;
+    text-align: right;
+}
+
 .note-item.is-completed h2,
 .note-item.is-completed p {
     color: var(--text-color-muted);
     text-decoration: line-through;
+}
+
+.note-header small {
+    display: block;
+    color: var(--text-color-muted);
+    font-size: 0.85rem;
+    margin-top: 0.2rem;
 }
 
 /* Priority styling for note items */
