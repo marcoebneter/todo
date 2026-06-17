@@ -37,8 +37,18 @@
                     placeholder="Beschreibung der Notiz oder Aufgabe"
                 ></textarea>
                 <div class="toolbar">
-                    <div id="save-button-mount"></div>
-                    <button id="btn-cancel-edit" class="secondary" hidden>Bearbeiten abbrechen</button>
+                    <div class="left-actions">
+                        <div id="save-button-mount"></div>
+                        <button id="btn-cancel-edit" class="secondary" hidden>Bearbeiten abbrechen</button>
+                    </div>
+                    <fieldset class="priority-selector">
+                        <legend>Wichtigkeit:</legend>
+                        <div class="priority-indicators">
+                            <span class="priority-emoji" data-priority="1">💥</span>
+                            <span class="priority-emoji" data-priority="2">💥</span>
+                            <span class="priority-emoji" data-priority="3">💥</span>
+                        </div>
+                    </fieldset>
                 </div>
                 <div id="form-error-mount"></div>
             </form>
@@ -82,7 +92,7 @@
             {{#if hasNotes}}
                 <ul id="notes-list" class="notes-list" aria-live="polite">
                     {{#each notes}}
-                        <li class="note-item {{#if completed}}is-completed{{/if}}">
+                        <li class="note-item {{#if completed}}is-completed{{/if}} {{priorityClass}}">
                             <div class="note-header">
                                 <div class="note-title-row">
                                     <input
@@ -98,6 +108,12 @@
                             </div>
 
                             <p>{{contentLabel}}</p>
+
+                            <div class="note-priority-display">
+                                <span class="priority-indicator {{#if (gte priority 1)}}active{{/if}}">💥</span>
+                                <span class="priority-indicator {{#if (gte priority 2)}}active{{/if}}">💥</span>
+                                <span class="priority-indicator {{#if (gte priority 3)}}active{{/if}}">💥</span>
+                            </div>
 
                             <div class="note-actions">
                                 <button type="button" class="secondary" data-action="edit" data-id="{{id}}">Bearbeiten</button>

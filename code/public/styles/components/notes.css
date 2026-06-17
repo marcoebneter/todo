@@ -35,3 +35,48 @@
     color: var(--text-color-muted);
     text-decoration: line-through;
 }
+
+/* Priority styling for note items */
+.note-item.priority-1 {
+    border-left: 4px solid #4caf50; /* Green - Low priority */
+}
+
+.note-item.priority-2 {
+    border-left: 4px solid #ffc107; /* Amber - Medium priority */
+}
+
+.note-item.priority-3 {
+    border-left: 4px solid #f44336; /* Red - High priority */
+}
+
+/* Priority display with emojis */
+.note-priority-display {
+    display: flex;
+    gap: 0.2rem;
+    align-items: center;
+}
+
+.priority-indicator {
+    font-size: 1.2em;
+    opacity: 0.3;
+    transition: opacity 0.2s ease;
+}
+
+.priority-indicator.active {
+    opacity: 1;
+}
+
+/* Priority fieldset styling */
+.priority-selector {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.priority-selector legend {
+    padding: 0;
+    margin: 0;
+}
