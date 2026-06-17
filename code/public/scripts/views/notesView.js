@@ -3,6 +3,8 @@ class NotesView {
         this.noteEditForm = document.getElementById("frm-note-edit");
         this.noteTitle = document.getElementById("note-title");
         this.noteContent = document.getElementById("note-content");
+        this.noteDueDate = document.getElementById("note-due-date");
+        this.priorityEmojis = document.querySelectorAll(".priority-emoji");
         this.sortSelect = document.getElementById("sort-select");
         this.showCompletedCheckbox = document.getElementById("show-completed");
         this.cancelEditButton = document.getElementById("btn-cancel-edit");
@@ -11,6 +13,10 @@ class NotesView {
         this.saveButtonMount = document.getElementById("save-button-mount");
 
         const handlebars = window.Handlebars;
+
+        // Register custom helper for comparison
+        handlebars.registerHelper("gte", (a, b) => a >= b);
+
         this.notesTemplate = handlebars.compile(document.getElementById("notes-template").innerHTML);
         this.errorTemplate = handlebars.compile(document.getElementById("form-error-template").innerHTML);
         this.saveButtonTemplate = handlebars.compile(document.getElementById("save-button-template").innerHTML);
@@ -23,12 +29,24 @@ class NotesView {
         });
     }
 
+    formatDateOnly(value) {
+        if (!value) return "";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "";
+        return date.toLocaleDateString("de-CH", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        });
+    }
+
     bindFormSubmit(handler) {
         this.noteEditForm.addEventListener("submit", async (event) => {
             event.preventDefault();
             await handler({
                 title: this.noteTitle.value,
                 content: this.noteContent.value,
+                dueAt: this.noteDueDate.value || null,
             });
         });
     }
@@ -36,6 +54,26 @@ class NotesView {
     bindCancelEdit(handler) {
         this.cancelEditButton.addEventListener("click", () => {
             handler();
+        });
+    }
+
+    bindPriorityChange(handler) {
+        this.priorityEmojis.forEach((emoji) => {
+            emoji.addEventListener("click", (event) => {
+                event.preventDefault();
+                const priority = Number(emoji.dataset.priority);
+                if (Number.isInteger(priority) && priority >= 1 && priority <= 3) {
+                    handler(priority);
+                    this.updatePriorityEmojis(priority);
+                }
+            });
+        });
+    }
+
+    updatePriorityEmojis(selectedPriority) {
+        this.priorityEmojis.forEach((emoji) => {
+            const priority = Number(emoji.dataset.priority);
+            emoji.classList.toggle("priority-active", priority <= selectedPriority);
         });
     }
 
@@ -92,7 +130,9 @@ class NotesView {
         const templateNotes = notes.map((note) => ({
             ...note,
             createdAtLabel: this.formatDate(note.createdAt),
+            dueDateLabel: note.dueAt ? this.formatDateOnly(note.dueAt) : null,
             contentLabel: note.content || "(keine Beschreibung)",
+            priorityClass: `priority-${note.priority || 2}`,
         }));
 
         this.notesMount.innerHTML = this.notesTemplate({
@@ -106,7 +146,7 @@ class NotesView {
         this.formErrorMount.innerHTML = this.errorTemplate({ message });
     }
 
-    renderFormState({ isEditing, note }) {
+    renderFormState({ isEditing, note, selectedPriority = 2 }) {
         this.saveButtonMount.innerHTML = this.saveButtonTemplate({
             saveLabel: isEditing ? "Aktualisieren" : "Speichern",
         });
@@ -114,13 +154,17 @@ class NotesView {
         if (isEditing && note) {
             this.noteTitle.value = note.title;
             this.noteContent.value = note.content;
+            this.noteDueDate.value = note.dueAt || "";
             this.cancelEditButton.hidden = false;
+            this.updatePriorityEmojis(selectedPriority);
             this.noteTitle.focus();
             return;
         }
 
         this.noteEditForm.reset();
+        this.noteDueDate.value = "";
         this.cancelEditButton.hidden = true;
+        this.updatePriorityEmojis(selectedPriority);
     }
 
     applyFilterState({ sort, showCompleted }) {

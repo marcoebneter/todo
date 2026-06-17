@@ -14,6 +14,7 @@
             crossorigin="anonymous"
             defer
         ></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
         <script src="scripts/index.js" type="module" defer></script>
         <script src="scripts/theme.js" type="module" defer></script>
     </head>
@@ -36,9 +37,21 @@
                     rows="4"
                     placeholder="Beschreibung der Notiz oder Aufgabe"
                 ></textarea>
+                <label for="note-due-date" class="visually-hidden">Fälligkeitsdatum</label>
+                <input id="note-due-date" name="dueAt" type="date" />
                 <div class="toolbar">
-                    <div id="save-button-mount"></div>
-                    <button id="btn-cancel-edit" class="secondary" hidden>Bearbeiten abbrechen</button>
+                    <div class="left-actions">
+                        <div id="save-button-mount"></div>
+                        <button id="btn-cancel-edit" class="secondary" hidden>Bearbeiten abbrechen</button>
+                    </div>
+                    <fieldset class="priority-selector">
+                        <legend>Wichtigkeit:</legend>
+                        <div class="priority-indicators">
+                            <span class="priority-emoji" data-priority="1">💥</span>
+                            <span class="priority-emoji" data-priority="2">💥</span>
+                            <span class="priority-emoji" data-priority="3">💥</span>
+                        </div>
+                    </fieldset>
                 </div>
                 <div id="form-error-mount"></div>
             </form>
@@ -50,6 +63,8 @@
                         <select id="sort-select">
                             <option value="oldest" selected>Älteste zuerst</option>
                             <option value="newest">Neueste zuerst</option>
+                            <option value="priority">Wichtigkeit zuerst</option>
+                            <option value="dueDate">Fälligkeitsdatum zuerst</option>
                         </select>
                     </label>
 
@@ -82,8 +97,8 @@
             {{#if hasNotes}}
                 <ul id="notes-list" class="notes-list" aria-live="polite">
                     {{#each notes}}
-                        <li class="note-item {{#if completed}}is-completed{{/if}}">
-                            <div class="note-header">
+                        <li class="note-item {{#if completed}}is-completed{{/if}} {{priorityClass}}">
+                                <div class="note-header">
                                 <div class="note-title-row">
                                     <input
                                         type="checkbox"
@@ -95,9 +110,16 @@
                                     <h2>{{title}}</h2>
                                 </div>
                                 <small>Erstellt: {{createdAtLabel}}</small>
+                                {{#if dueDateLabel}}<small>Fällig: {{dueDateLabel}}</small>{{/if}}
                             </div>
 
                             <p>{{contentLabel}}</p>
+
+                            <div class="note-priority-display">
+                                <span class="priority-indicator {{#if (gte priority 1)}}active{{/if}}">💥</span>
+                                <span class="priority-indicator {{#if (gte priority 2)}}active{{/if}}">💥</span>
+                                <span class="priority-indicator {{#if (gte priority 3)}}active{{/if}}">💥</span>
+                            </div>
 
                             <div class="note-actions">
                                 <button type="button" class="secondary" data-action="edit" data-id="{{id}}">Bearbeiten</button>
@@ -107,7 +129,9 @@
                     {{/each}}
                 </ul>
             {{else}}
-                <p id="empty-state" class="empty-state">Keine offenen Notizen vorhanden.</p>
+                <form>
+                    <p id="empty-state" class="empty-state">Keine offenen Notizen vorhanden.</p>
+                </form>
             {{/if}}
         </script>
     </body>

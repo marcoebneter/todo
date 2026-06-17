@@ -1,4 +1,4 @@
-import { listNotes, createNote, replaceNote, patchNote, deleteNote } from "../models/notesApi.js";
+import { listNotes, createNote, replaceNote, patchNote, deleteNote } from "../services/notesApi.js";
 
 class NotesController {
     constructor(view) {
@@ -9,6 +9,7 @@ class NotesController {
             showCompleted: false,
             editingNoteId: null,
             editingNoteCompleted: false,
+            selectedPriority: 2,
         };
     }
 
@@ -17,11 +18,14 @@ class NotesController {
             sort: this.state.sort,
             showCompleted: this.state.showCompleted,
         });
-        this.view.renderFormState({ isEditing: false, note: null });
+        this.view.renderFormState({ isEditing: false, note: null, selectedPriority: this.state.selectedPriority });
         this.view.renderError("");
 
         this.view.bindFormSubmit(async (payload) => this.saveNote(payload));
         this.view.bindCancelEdit(() => this.setEditMode(null));
+        this.view.bindPriorityChange((priority) => {
+            this.state.selectedPriority = priority;
+        });
         this.view.bindSortChange(async (sort) => {
             this.state.sort = sort;
             await this.refreshNotes();
@@ -47,14 +51,16 @@ class NotesController {
         if (!note) {
             this.state.editingNoteId = null;
             this.state.editingNoteCompleted = false;
-            this.view.renderFormState({ isEditing: false, note: null });
+            this.state.selectedPriority = 2;
+            this.view.renderFormState({ isEditing: false, note: null, selectedPriority: 2 });
             this.view.renderError("");
             return;
         }
 
         this.state.editingNoteId = note.id;
         this.state.editingNoteCompleted = note.completed;
-        this.view.renderFormState({ isEditing: true, note });
+        this.state.selectedPriority = note.priority || 2;
+        this.view.renderFormState({ isEditing: true, note, selectedPriority: note.priority || 2 });
         this.view.renderError("");
     }
 
@@ -85,6 +91,7 @@ class NotesController {
             title,
             content,
             completed: this.state.editingNoteCompleted,
+            priority: this.state.selectedPriority,
         };
 
         try {

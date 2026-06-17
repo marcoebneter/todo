@@ -15,3 +15,32 @@ button.secondary {
 button.danger {
     background-color: var(--button-background-color-danger);
 }
+
+/* Priority emoji selectors */
+.priority-indicators {
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+    cursor: pointer;
+}
+
+.priority-emoji {
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    opacity: 0.4;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.3rem;
+}
+
+.priority-emoji:hover {
+    transform: scale(1.15);
+    opacity: 0.7;
+}
+
+.priority-emoji.priority-active {
+    opacity: 1;
+    margin: 0.1rem;
+    transform: scale(1.1);
+    background-color: var(--button-background-color);
+}
