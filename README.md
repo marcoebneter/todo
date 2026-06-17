@@ -78,7 +78,7 @@ npm run verify
 - `lint`: ESLint Checks
 - `test:server`: Vitest API-Tests fuer den Server (Supertest + isolierte Testdatenbank)
 - `smoke`: End-to-End Smoke Test gegen laufenden Server
-- `verify`: `lint` + `smoke`
+- `verify`: `lint` + `test:server` + `smoke`
 
 ## API Uebersicht
 

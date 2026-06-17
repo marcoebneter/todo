@@ -19,7 +19,7 @@
         "lint-staged": "lint-staged",
         "format": "prettier --write \"**/*.{js,cjs,mjs,css,html,json,md}\"",
         "format:check": "prettier --check \"**/*.{js,cjs,mjs,css,html,json,md}\"",
-        "verify": "npm run lint && npm run smoke",
+        "verify": "npm run lint && npm run test:server && npm run smoke",
         "prepare": "husky"
     },
     "lint-staged": {
