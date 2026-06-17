@@ -1,4 +1,3 @@
-
 # ISC License
 
 Copyright (c) 2026, Marco Ebneter
