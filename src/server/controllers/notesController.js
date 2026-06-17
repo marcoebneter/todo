@@ -6,7 +6,7 @@
 
 import NoteService from "../services/noteService.js";
 import { successResponse, createdResponse, errorResponse, notFoundResponse } from "../utils/responseHandler.js";
-import { parseId, parseRequiredTitle, parseOptionalContent } from "../utils/validators.js";
+import { parseId, parseRequiredTitle, parseOptionalContent, parseOptionalCompleted } from "../utils/validators.js";
 
 class NotesController {
     constructor() {
@@ -40,14 +40,26 @@ class NotesController {
      */
     async create(req, res, next) {
         try {
-            const title = parseRequiredTitle(req.body.title);
-            const content = parseOptionalContent(req.body.content);
+            const titleResult = parseRequiredTitle(req.body.title);
+            const contentResult = parseOptionalContent(req.body.content);
 
-            if (!title) {
-                return errorResponse(res, "Title is required.", 400);
+            if (!titleResult.ok) {
+                return errorResponse(
+                    res,
+                    { code: "VALIDATION_ERROR", message: titleResult.message, details: titleResult.details },
+                    400,
+                );
             }
 
-            const note = await this.noteService.createNote(title, content);
+            if (!contentResult.ok) {
+                return errorResponse(
+                    res,
+                    { code: "VALIDATION_ERROR", message: contentResult.message, details: contentResult.details },
+                    400,
+                );
+            }
+
+            const note = await this.noteService.createNote(titleResult.value, contentResult.value);
             createdResponse(res, note);
         } catch (error) {
             next(error);
@@ -62,19 +74,48 @@ class NotesController {
     async replace(req, res, next) {
         try {
             const id = parseId(req.params.id);
-            const title = parseRequiredTitle(req.body.title);
-            const content = parseOptionalContent(req.body.content);
-            const completed = Boolean(req.body.completed);
+            const titleResult = parseRequiredTitle(req.body.title);
+            const contentResult = parseOptionalContent(req.body.content);
+            const completedResult = parseOptionalCompleted(req.body.completed);
 
             if (!id) {
-                return errorResponse(res, "Invalid note id.", 400);
+                return errorResponse(
+                    res,
+                    { code: "VALIDATION_ERROR", message: "Invalid note id.", details: { field: "id" } },
+                    400,
+                );
             }
 
-            if (!title) {
-                return errorResponse(res, "Title is required.", 400);
+            if (!titleResult.ok) {
+                return errorResponse(
+                    res,
+                    { code: "VALIDATION_ERROR", message: titleResult.message, details: titleResult.details },
+                    400,
+                );
             }
 
-            const note = await this.noteService.updateNote(id, title, content, completed);
+            if (!contentResult.ok) {
+                return errorResponse(
+                    res,
+                    { code: "VALIDATION_ERROR", message: contentResult.message, details: contentResult.details },
+                    400,
+                );
+            }
+
+            if (!completedResult.ok) {
+                return errorResponse(
+                    res,
+                    { code: "VALIDATION_ERROR", message: completedResult.message, details: completedResult.details },
+                    400,
+                );
+            }
+
+            const note = await this.noteService.updateNote(
+                id,
+                titleResult.value,
+                contentResult.value,
+                completedResult.value,
+            );
 
             if (!note) {
                 return notFoundResponse(res, "Note");
@@ -96,31 +137,67 @@ class NotesController {
             const id = parseId(req.params.id);
 
             if (!id) {
-                return errorResponse(res, "Invalid note id.", 400);
+                return errorResponse(
+                    res,
+                    { code: "VALIDATION_ERROR", message: "Invalid note id.", details: { field: "id" } },
+                    400,
+                );
             }
 
             const payload = {};
 
             if (Object.hasOwn(req.body, "completed")) {
-                payload.completed = req.body.completed === true;
+                const completedResult = parseOptionalCompleted(req.body.completed);
+                if (!completedResult.ok) {
+                    return errorResponse(
+                        res,
+                        {
+                            code: "VALIDATION_ERROR",
+                            message: completedResult.message,
+                            details: completedResult.details,
+                        },
+                        400,
+                    );
+                }
+                payload.completed = completedResult.value;
             }
 
             if (Object.hasOwn(req.body, "title")) {
-                const title = parseRequiredTitle(req.body.title);
-                if (!title) {
-                    return errorResponse(res, "Title is required.", 400);
+                const titleResult = parseRequiredTitle(req.body.title);
+                if (!titleResult.ok) {
+                    return errorResponse(
+                        res,
+                        { code: "VALIDATION_ERROR", message: titleResult.message, details: titleResult.details },
+                        400,
+                    );
                 }
-                payload.title = title;
+                payload.title = titleResult.value;
             }
 
             if (Object.hasOwn(req.body, "content")) {
-                payload.content = parseOptionalContent(req.body.content);
+                const contentResult = parseOptionalContent(req.body.content);
+                if (!contentResult.ok) {
+                    return errorResponse(
+                        res,
+                        { code: "VALIDATION_ERROR", message: contentResult.message, details: contentResult.details },
+                        400,
+                    );
+                }
+                payload.content = contentResult.value;
             }
 
             const result = await this.noteService.patchNote(id, payload);
 
             if (!result.hasUpdates) {
-                return errorResponse(res, "No valid fields to update.", 400);
+                return errorResponse(
+                    res,
+                    {
+                        code: "VALIDATION_ERROR",
+                        message: "No valid fields to update.",
+                        details: { fields: ["title", "content", "completed"] },
+                    },
+                    400,
+                );
             }
 
             if (!result.note) {
@@ -143,7 +220,11 @@ class NotesController {
             const id = parseId(req.params.id);
 
             if (!id) {
-                return errorResponse(res, "Invalid note id.", 400);
+                return errorResponse(
+                    res,
+                    { code: "VALIDATION_ERROR", message: "Invalid note id.", details: { field: "id" } },
+                    400,
+                );
             }
 
             const deleted = await this.noteService.deleteNote(id);

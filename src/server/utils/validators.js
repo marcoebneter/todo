@@ -19,10 +19,24 @@ function parseId(rawId) {
  * @returns {string|null} - Trimmed non-empty string or null if invalid
  */
 function parseRequiredTitle(value) {
-    if (typeof value !== "string" || value.trim().length === 0) {
-        return null;
+    if (typeof value !== "string") {
+        return {
+            ok: false,
+            message: "Title must be a string.",
+            details: { field: "title" },
+        };
     }
-    return value.trim();
+
+    const title = value.trim();
+    if (title.length === 0) {
+        return {
+            ok: false,
+            message: "Title is required.",
+            details: { field: "title" },
+        };
+    }
+
+    return { ok: true, value: title };
 }
 
 /**
@@ -31,7 +45,35 @@ function parseRequiredTitle(value) {
  * @returns {string} - Trimmed string or empty string if not a string
  */
 function parseOptionalContent(value) {
-    return typeof value === "string" ? value.trim() : "";
+    if (value === undefined) {
+        return { ok: true, value: "" };
+    }
+
+    if (typeof value !== "string") {
+        return {
+            ok: false,
+            message: "Content must be a string.",
+            details: { field: "content" },
+        };
+    }
+
+    return { ok: true, value: value.trim() };
 }
 
-export { parseId, parseRequiredTitle, parseOptionalContent };
+function parseOptionalCompleted(value) {
+    if (value === undefined) {
+        return { ok: true, value: false };
+    }
+
+    if (typeof value !== "boolean") {
+        return {
+            ok: false,
+            message: "Completed must be a boolean.",
+            details: { field: "completed" },
+        };
+    }
+
+    return { ok: true, value };
+}
+
+export { parseId, parseRequiredTitle, parseOptionalContent, parseOptionalCompleted };

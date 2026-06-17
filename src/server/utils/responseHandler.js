@@ -25,20 +25,41 @@ function createdResponse(res, data) {
 /**
  * Format an error response.
  * @param {Express.Response} res - Express response object
- * @param {string} message - Error message
+ * @param {Object} error - Error payload
+ * @param {string} error.code - Machine-readable error code
+ * @param {string} error.message - Human-readable error message
+ * @param {Object} [error.details] - Optional extra details
  * @param {number} statusCode - HTTP status code (default: 400)
  */
-function errorResponse(res, message, statusCode = 400) {
-    res.status(statusCode).json({ error: message });
+function errorResponse(res, error, statusCode = 400) {
+    const payload = {
+        code: error?.code || "VALIDATION_ERROR",
+        message: error?.message || "Request validation failed.",
+    };
+
+    if (error?.details !== undefined) {
+        payload.details = error.details;
+    }
+
+    res.status(statusCode).json({ error: payload });
 }
 
 /**
  * Format a not found error response (404).
  * @param {Express.Response} res - Express response object
  * @param {string} resource - The resource that was not found
+ * @param {Object} [details] - Optional details payload
  */
-function notFoundResponse(res, resource = "Resource") {
-    res.status(404).json({ error: `${resource} not found.` });
+function notFoundResponse(res, resource = "Resource", details = undefined) {
+    return errorResponse(
+        res,
+        {
+            code: "NOT_FOUND",
+            message: `${resource} not found.`,
+            details,
+        },
+        404,
+    );
 }
 
 export { successResponse, createdResponse, errorResponse, notFoundResponse };
