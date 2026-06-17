@@ -4,7 +4,7 @@
  * Handles data transformations, validation orchestration, and model calls.
  */
 
-import NoteModel from "../models/noteModel.js";
+import NoteModel from "../models/note-model.js";
 
 class NoteService {
     /**

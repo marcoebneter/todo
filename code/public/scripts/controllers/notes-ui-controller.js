@@ -1,6 +1,20 @@
-import { listNotes, createNote, replaceNote, patchNote, deleteNote } from "../services/notesApi.js";
+import { listNotes, createNote, replaceNote, patchNote, deleteNote, fetchNotesMarkup } from "../services/notes-api.js";
 
-class NotesController {
+function normalizeDueDateInput(value) {
+    if (!value || value.trim() === "") {
+        return { ok: true, value: null };
+    }
+
+    const raw = value.trim();
+    const m = window.moment?.(raw, ["DD.MM.YYYY", "YYYY-MM-DD"], true);
+    if (!m || !m.isValid()) {
+        return { ok: false };
+    }
+
+    return { ok: true, value: m.format("YYYY-MM-DD") };
+}
+
+class NotesUiController {
     constructor(view) {
         this.view = view;
         this.state = {
@@ -70,7 +84,11 @@ class NotesController {
                 sort: this.state.sort,
                 showCompleted: this.state.showCompleted,
             });
-            this.view.renderNotes(this.state.notes);
+            const notesMarkup = await fetchNotesMarkup({
+                sort: this.state.sort,
+                showCompleted: this.state.showCompleted,
+            });
+            this.view.renderNotesMarkup(notesMarkup);
         } catch (error) {
             this.view.renderError(error.message);
         }
@@ -81,9 +99,15 @@ class NotesController {
 
         const title = formPayload.title.trim();
         const content = formPayload.content.trim();
+        const dueDateResult = normalizeDueDateInput(formPayload.dueAt);
 
         if (!title) {
             this.view.renderError("Titel ist ein Pflichtfeld.");
+            return;
+        }
+
+        if (!dueDateResult.ok) {
+            this.view.renderError("Fälligkeitsdatum ist ungültig.");
             return;
         }
 
@@ -92,6 +116,7 @@ class NotesController {
             content,
             completed: this.state.editingNoteCompleted,
             priority: this.state.selectedPriority,
+            dueAt: dueDateResult.value,
         };
 
         try {
@@ -138,4 +163,4 @@ class NotesController {
     }
 }
 
-export default NotesController;
+export default NotesUiController;

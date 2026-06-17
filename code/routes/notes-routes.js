@@ -1,8 +1,8 @@
 import { Router } from "express";
-import NotesController from "../controllers/notesController.js";
+import NotesApiController from "../controllers/notes-api-controller.js";
 
 const router = Router();
-const controller = new NotesController();
+const controller = new NotesApiController();
 
 router.get("/", (req, res, next) => controller.list(req, res, next));
 router.post("/", (req, res, next) => controller.create(req, res, next));

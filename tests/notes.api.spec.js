@@ -3,8 +3,8 @@ import { fileURLToPath } from "url";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import request from "supertest";
 import { rm } from "fs/promises";
-import app from "../code/server/app.js";
-import Database from "../code/server/db/database.js";
+import app from "../code/app.js";
+import Database from "../code/db/database.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

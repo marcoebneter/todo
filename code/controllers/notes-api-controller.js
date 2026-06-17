@@ -4,8 +4,8 @@
  * Validates requests, delegates business logic to NoteService, formats responses.
  */
 
-import NoteService from "../services/noteService.js";
-import { successResponse, createdResponse, errorResponse } from "../utils/responseHandler.js";
+import NoteService from "../services/note-service.js";
+import { successResponse, createdResponse, errorResponse } from "../utils/response-handler.js";
 import {
     parseRequiredTitle,
     parseOptionalContent,
@@ -18,9 +18,9 @@ import {
     handleValidationResult,
     buildPatchPayload,
     sendNotFoundIfMissing,
-} from "./controllerHelpers.js";
+} from "./controller-helpers.js";
 
-class NotesController {
+class NotesApiController {
     constructor() {
         this.noteService = new NoteService();
     }
@@ -171,4 +171,4 @@ class NotesController {
     }
 }
 
-export default NotesController;
+export default NotesApiController;

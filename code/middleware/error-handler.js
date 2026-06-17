@@ -4,7 +4,7 @@
  * Must be registered LAST in the middleware chain (after all routes).
  */
 
-import { errorResponse } from "../utils/responseHandler.js";
+import { errorResponse } from "../utils/response-handler.js";
 
 /**
  * Express error handling middleware.

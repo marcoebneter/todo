@@ -5,11 +5,12 @@
     "license": "ISC",
     "author": "Marco Ebneter",
     "type": "module",
-    "main": "node src/server/server.js",
+    "main": "index.js",
     "scripts": {
-        "start": "node code/server/server.js",
-        "dev": "concurrently -k -n BACKEND,VIEW -c cyan,magenta \"npm run backend:watch\" \"npm run frontend:live\"",
-        "backend:watch": "nodemon --watch code/server --watch code/public --ext js,mjs,cjs,html,css code/server/server.js",
+        "start": "node index.js",
+        "dev": "npm run dev:server",
+        "dev:live": "concurrently -k -n BACKEND,VIEW -c cyan,magenta \"npm run dev:server\" \"npm run frontend:live\"",
+        "dev:server": "nodemon --watch code --ignore code/public --ext js,mjs,cjs,json index.js",
         "frontend:live": "browser-sync start --proxy \"http://localhost:3000\" --files \"code/public/**/*\" --port 3001 --no-ui",
         "smoke": "node scripts/smoke-test.mjs",
         "test:server": "vitest run tests",
@@ -44,6 +45,7 @@
     },
     "dependencies": {
         "express": "^5.2.1",
+        "express-handlebars": "^8.0.3",
         "moment": "^2.30.1",
         "sqlite3": "^6.0.1"
     }

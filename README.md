@@ -7,7 +7,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white)](https://expressjs.com)
 [![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org)
-[![Handlebars](https://img.shields.io/badge/Handlebars-CDN-f0772b?logo=handlebarsdotjs&logoColor=white)](https://handlebarsjs.com)
+[![Handlebars](https://img.shields.io/badge/Handlebars-SSR-f0772b?logo=handlebarsdotjs&logoColor=white)](https://handlebarsjs.com)
 [![Vitest](https://img.shields.io/badge/Vitest-tests-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev)
 [![ESLint](https://img.shields.io/badge/ESLint-linted-4B32C3?logo=eslint&logoColor=white)](https://eslint.org)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](LICENSE.md)
@@ -54,16 +54,16 @@ A lightweight but well-structured notes and todo application. Notes can be creat
 
 ## 🛠️ Tech Stack
 
-| Layer            | Technology          |
-| ---------------- | ------------------- |
-| Runtime          | Node.js 18+         |
-| Server Framework | Express 5           |
-| Database         | SQLite (`sqlite3`)  |
-| Client Rendering | Handlebars (CDN)    |
-| Client Scripting | Plain JS ES Modules |
-| Testing          | Vitest + Supertest  |
-| Linting          | ESLint + Prettier   |
-| Git Hooks        | Husky + lint-staged |
+| Layer            | Technology                |
+| ---------------- | ------------------------- |
+| Runtime          | Node.js 18+               |
+| Server Framework | Express 5                 |
+| Database         | SQLite (`sqlite3`)        |
+| Client Rendering | Handlebars (SSR partials) |
+| Client Scripting | Plain JS ES Modules       |
+| Testing          | Vitest + Supertest        |
+| Linting          | ESLint + Prettier         |
+| Git Hooks        | Husky + lint-staged       |
 
 ---
 
@@ -73,30 +73,34 @@ The application follows the **MVC pattern on both server and client**.
 
 ### Server MVC
 
-| File                                         | Responsibility                                                      |
-| -------------------------------------------- | ------------------------------------------------------------------- |
-| `code/server/app.js`                         | Express app setup — middleware, routes, static files, error handler |
-| `code/server/server.js`                      | Process entry point — DB init and `app.listen`                      |
-| `code/server/routes/notesRoutes.js`          | API route definitions for `/api/notes`                              |
-| `code/server/controllers/notesController.js` | HTTP request validation and response formatting                     |
-| `code/server/services/noteService.js`        | Business logic between controller and model                         |
-| `code/server/models/noteModel.js`            | SQL queries and data mapping                                        |
-| `code/server/db/database.js`                 | SQLite connection, query helpers, schema init                       |
-| `code/server/middleware/errorHandler.js`     | Global error handler                                                |
-| `code/server/utils/responseHandler.js`       | Consistent API response helpers                                     |
-| `code/server/utils/validators.js`            | Strict typed input validators                                       |
+| File                                       | Responsibility                                                                   |
+| ------------------------------------------ | -------------------------------------------------------------------------------- |
+| `code/app.js`                              | Express app setup — middleware, routes, static files, view engine, error handler |
+| `index.js`                                 | Process entry point — DB init and `app.listen`                                   |
+| `code/routes/page-routes.js`               | Page route definitions for server-rendered views                                 |
+| `code/controllers/page-controller.js`      | Controller for rendering page templates                                          |
+| `code/views/index.hbs`                     | Server-rendered content view for the root route                                  |
+| `code/views/layouts/default.hbs`           | Shared Handlebars layout wrapping rendered pages                                 |
+| `code/routes/notes-routes.js`              | API route definitions for `/api/notes`                                           |
+| `code/controllers/notes-api-controller.js` | HTTP request validation and response formatting                                  |
+| `code/services/note-service.js`            | Business logic between controller and model                                      |
+| `code/models/note-model.js`                | SQL queries and data mapping                                                     |
+| `code/db/database.js`                      | SQLite connection, query helpers, schema init                                    |
+| `code/middleware/error-handler.js`         | Global error handler                                                             |
+| `code/utils/response-handler.js`           | Consistent API response helpers                                                  |
+| `code/utils/validators.js`                 | Strict typed input validators                                                    |
 
 ### Client MVC
 
-| File                                                 | Responsibility                                      |
-| ---------------------------------------------------- | --------------------------------------------------- |
-| `code/public/scripts/index.js`                       | Client bootstrap — wires view and controller        |
-| `code/public/scripts/controllers/notesController.js` | UI state management and event orchestration         |
-| `code/public/scripts/views/notesView.js`             | Handlebars template rendering and DOM event binding |
-| `code/public/scripts/models/notesApi.js`             | All `fetch` calls to the server API                 |
-| `code/public/scripts/theme.js`                       | Dark/light mode logic                               |
+| File                                                     | Responsibility                               |
+| -------------------------------------------------------- | -------------------------------------------- |
+| `code/public/scripts/index.js`                           | Client bootstrap — wires view and controller |
+| `code/public/scripts/controllers/notes-ui-controller.js` | UI state management and event orchestration  |
+| `code/public/scripts/views/notes-view.js`                | DOM event binding and UI state rendering     |
+| `code/public/scripts/services/notes-api.js`              | All `fetch` calls to the server API          |
+| `code/public/scripts/theme.js`                           | Dark/light mode logic                        |
 
-> Handlebars templates are defined inline in `code/public/index.html` and compiled at runtime via CDN.
+> The root page is rendered from `code/views/index.hbs` with `code/views/layouts/default.hbs`. The notes list is rendered server-side via `code/views/partials/notes-list.hbs` and loaded from `/partials/notes`.
 
 ---
 
@@ -104,41 +108,50 @@ The application follows the **MVC pattern on both server and client**.
 
 ```text
 todo/
+├── index.js
 ├── data/
 │   └── notes.db
 ├── scripts/
 │   └── smoke-test.mjs
 ├── code/
+│   ├── app.js
+│   ├── controllers/
+│   │   ├── notes-api-controller.js
+│   │   └── page-controller.js
+│   ├── db/
+│   │   └── database.js
+│   ├── middleware/
+│   │   └── error-handler.js
+│   ├── models/
+│   │   └── note-model.js
 │   ├── public/
-│   │   ├── index.html
-│   │   ├── global.css
+│   │   ├── favicon.png
+│   │   ├── styles/
+│   │   │   ├── index.css
+│   │   │   └── components/
 │   │   └── scripts/
 │   │       ├── controllers/
-│   │       │   └── notesController.js
-│   │       ├── models/
-│   │       │   └── notesApi.js
+│   │       │   └── notes-ui-controller.js
+│   │       ├── services/
+│   │       │   └── notes-api.js
 │   │       ├── views/
-│   │       │   └── notesView.js
+│   │       │   └── notes-view.js
 │   │       ├── index.js
 │   │       └── theme.js
-│   └── server/
-│       ├── app.js
-│       ├── server.js
-│       ├── controllers/
-│       │   └── notesController.js
-│       ├── db/
-│       │   └── database.js
-│       ├── middleware/
-│       │   └── errorHandler.js
-│       ├── models/
-│       │   └── noteModel.js
-│       ├── routes/
-│       │   └── notesRoutes.js
-│       ├── services/
-│       │   └── noteService.js
-│       └── utils/
-│           ├── responseHandler.js
-│           └── validators.js
+│   ├── routes/
+│   │   ├── notes-routes.js
+│   │   └── page-routes.js
+│   ├── services/
+│   │   └── note-service.js
+│   ├── utils/
+│   │   ├── response-handler.js
+│   │   └── validators.js
+│   └── views/
+│       ├── index.hbs
+│       ├── layouts/
+│       │   └── default.hbs
+│       └── partials/
+│           └── notes-list.hbs
 └── tests/
     └── notes.api.spec.js
 ```
@@ -153,7 +166,7 @@ todo/
 
 ### Installation
 
-```bash
+```powershell
 git clone <repo-url>
 cd todo
 npm install
@@ -161,7 +174,7 @@ npm install
 
 ### Run the app
 
-```bash
+```powershell
 npm start
 ```
 
@@ -169,8 +182,14 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Development mode (auto reload)
 
-```bash
+```powershell
 npm run dev
+```
+
+For backend + frontend live reload together:
+
+```powershell
+npm run dev:live
 ```
 
 | Process      | URL                     | Description                          |
@@ -185,7 +204,8 @@ npm run dev
 | Script                      | Description                                         |
 | --------------------------- | --------------------------------------------------- |
 | `npm start`                 | Start the production server                         |
-| `npm run dev`               | Start backend + live reload proxy                   |
+| `npm run dev`               | Start backend with `nodemon` only                   |
+| `npm run dev:live`          | Start backend + live reload proxy                   |
 | `npm run lint`              | Run ESLint checks                                   |
 | `npm run lint:fix`          | Auto-fix ESLint issues                              |
 | `npm run format`            | Format all files with Prettier                      |
@@ -252,7 +272,7 @@ All error responses follow the **Option A** structure:
 Unit/integration tests for the server API using **Vitest** + **Supertest**.
 Each test run uses an isolated SQLite database (`data/notes.vitest.db`) that is cleaned up after the suite.
 
-```bash
+```powershell
 npm run test:server
 ```
 
@@ -268,7 +288,7 @@ Coverage includes:
 
 End-to-end test that boots the real server, runs all API flows, and shuts down.
 
-```bash
+```powershell
 npm run smoke
 ```
 
@@ -293,7 +313,7 @@ The project uses [Husky](https://typicode.github.io/husky) and [lint-staged](htt
 
 If hooks are missing locally:
 
-```bash
+```powershell
 npm run prepare
 ```
 
