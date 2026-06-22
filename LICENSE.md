@@ -1,0 +1,8 @@
+# ISC License
+
+Copyright (c) 2026, Marco Ebneter
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted...
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES...

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="de">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Todo App</title>
+
+        <link rel="icon" href="favicon.png" type="image/png" />
+        <link rel="stylesheet" href="css/themes.css" />
+        <link rel="stylesheet" href="css/header.css" />
+        <link rel="stylesheet" href="css/content.css" />
+        <link rel="stylesheet" href="css/footer.css" />
+        <link rel="stylesheet" href="css/components/buttons.css" />
+        <link rel="stylesheet" href="css/components/inputs.css" />
+        <link rel="stylesheet" href="css/components/toolbars.css" />
+        <link rel="stylesheet" href="css/components/notes.css" />
+        <link rel="stylesheet" href="css/index.css" />
+
+        <script src="lib/moment.js" defer></script>
+        <script src="lib/handlebars.js" defer></script>
+        <script src="js/index.js" type="module" defer></script>
+        <script src="js/theme.js" type="module" defer></script>
+    </head>
+    <body>
+        <header>
+            <div class="header">
+                <h1>Todo / Notizen</h1>
+                <button class="btn-theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+            </div>
+        </header>
+
+        <main class="content">
+            <form id="frm-note-edit">
+                <label for="note-title" class="visually-hidden">Titel der Notiz</label>
+                <input id="note-title" name="title" type="text" placeholder="Titel" required maxlength="120" />
+                <label for="note-content" class="visually-hidden">Beschreibung</label>
+                <textarea
+                    id="note-content"
+                    name="content"
+                    rows="4"
+                    placeholder="Beschreibung der Notiz oder Aufgabe"
+                ></textarea>
+                <label for="note-due-date" class="visually-hidden">Falligkeitsdatum</label>
+                <input id="note-due-date" name="dueAt" type="date" />
+                <div class="toolbar">
+                    <div class="left-actions">
+                        <div id="save-button-mount">
+                            <button type="submit" id="save-button">Speichern</button>
+                        </div>
+                        <button id="btn-cancel-edit" class="secondary" hidden>Bearbeiten abbrechen</button>
+                    </div>
+                    <fieldset class="priority-selector">
+                        <legend>Wichtigkeit:</legend>
+                        <div class="priority-indicators">
+                            <span class="priority-emoji" data-priority="1">💥</span>
+                            <span class="priority-emoji" data-priority="2">💥</span>
+                            <span class="priority-emoji" data-priority="3">💥</span>
+                        </div>
+                    </fieldset>
+                </div>
+                <div id="form-error-mount" class="visually-hidden">
+                    <p id="form-error" class="error-message" role="alert"></p>
+                </div>
+            </form>
+
+            <form>
+                <section class="toolbar" aria-label="Filter und Sortierung">
+                    <label>
+                        Sortierung
+                        <select id="sort-select">
+                            <option value="oldest" selected>Älteste zuerst</option>
+                            <option value="newest">Neueste zuerst</option>
+                            <option value="priority">Wichtigste zuerst</option>
+                            <option value="dueDate">Fälligkeit zuerst</option>
+                        </select>
+                    </label>
+
+                    <label>
+                        Abgeschlossene anzeigen
+                        <input id="show-completed" type="checkbox" />
+                    </label>
+                </section>
+            </form>
+
+            <div id="notes-mount" aria-live="polite"></div>
+        </main>
+
+        <footer>
+            <div class="footer">
+                <p><small>Made with ❤️ in order of my continuing education</small></p>
+                <p><small>Copyrights @ Marco Ebneter</small></p>
+            </div>
+        </footer>
+    </body>
+</html>

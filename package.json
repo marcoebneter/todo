@@ -1,0 +1,54 @@
+{
+    "name": "todo-app",
+    "version": "1.0.0",
+    "description": "This is a todo app to organize your tasks and increase productivity. It is also the Project 1 of the CAS Frontend Engineering course.",
+    "license": "ISC",
+    "author": "Marco Ebneter",
+    "type": "module",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "setup:libs": "node scripts/setup-libs.mjs",
+        "postinstall": "npm run setup:libs",
+        "dev": "npm run dev:server",
+        "dev:live": "concurrently -k -n BACKEND,VIEW -c cyan,magenta \"npm run dev:server\" \"npm run frontend:live\"",
+        "dev:server": "nodemon --watch code --ignore code/public --ext js,mjs,cjs,json index.js",
+        "frontend:live": "browser-sync start --proxy \"http://localhost:3000\" --files \"code/public/**/*\" --port 3001 --no-ui",
+        "smoke": "node scripts/smoke-test.mjs",
+        "test:server": "vitest run tests",
+        "test:server:watch": "vitest tests",
+        "lint": "eslint code tests",
+        "lint:fix": "eslint code tests --fix",
+        "lint-staged": "lint-staged",
+        "format": "prettier --write \"**/*.{js,cjs,mjs,css,html,json,md}\"",
+        "format:check": "prettier --check \"**/*.{js,cjs,mjs,css,html,json,md}\"",
+        "verify": "npm run lint && npm run test:server && npm run smoke",
+        "prepare": "husky"
+    },
+    "lint-staged": {
+        "*.{js,mjs,cjs,css,html,json,md}": "prettier --write",
+        "*.{js,mjs,cjs,css,html}": "eslint --fix"
+    },
+    "devDependencies": {
+        "@eslint/css": "^1.1.0",
+        "@eslint/js": "^10.0.1",
+        "@html-eslint/eslint-plugin": "^0.60.0",
+        "@html-eslint/parser": "^0.60.0",
+        "browser-sync": "^3.0.3",
+        "concurrently": "^10.0.3",
+        "eslint": "^10.2.0",
+        "globals": "^17.5.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^17.0.2",
+        "nodemon": "^3.1.14",
+        "prettier": "^3.8.3",
+        "supertest": "^7.1.4",
+        "vitest": "^4.1.9"
+    },
+    "dependencies": {
+        "express": "^5.2.1",
+        "handlebars": "^4.7.8",
+        "moment": "^2.30.1",
+        "sqlite3": "^6.0.1"
+    }
+}

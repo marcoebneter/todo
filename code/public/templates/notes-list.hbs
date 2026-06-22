@@ -1,0 +1,40 @@
+{{#if hasNotes}}
+<ul id="notes-list" class="notes-list" aria-live="polite">
+    {{#each notes}}
+    <li class="note-item {{#if completed}}is-completed{{/if}} {{priorityClass}}">
+        <div class="note-header">
+            <div class="note-title-row">
+                <input
+                    type="checkbox"
+                    data-action="toggle"
+                    data-id="{{id}}"
+                    {{#if completed}}checked{{/if}}
+                    aria-label="Notiz als abgeschlossen markieren"
+                />
+                <h2>{{title}}</h2>
+            </div>
+            <small>Erstellt: {{createdAtLabel}}</small>
+            {{#if dueDateLabel}}<small>Fallig: {{dueDateLabel}}</small>{{/if}}
+        </div>
+
+        <p>{{contentLabel}}</p>
+
+        <div class="note-priority-display">
+            <span class="priority-indicator {{#if priorityAtLeast1}}active{{/if}}">💥</span>
+            <span class="priority-indicator {{#if priorityAtLeast2}}active{{/if}}">💥</span>
+            <span class="priority-indicator {{#if priorityAtLeast3}}active{{/if}}">💥</span>
+        </div>
+
+        <div class="note-actions">
+            <button type="button" class="secondary" data-action="edit" data-id="{{id}}">Bearbeiten</button>
+            <button type="button" class="danger" data-action="delete" data-id="{{id}}">Archivieren</button>
+        </div>
+    </li>
+    {{/each}}
+</ul>
+{{else}}
+<form>
+    <p id="empty-state" class="empty-state">Keine offenen Notizen vorhanden.</p>
+</form>
+{{/if}}
+
