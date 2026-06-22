@@ -1,7 +1,8 @@
 /**
  * NoteModel - Data persistence layer for notes.
- * Handles database queries and data mapping.
- * All validation logic has been moved to utils/validators.js.
+ * Handles raw database queries, row-to-object mapping, and CRUD operations.
+ * All business logic (filtering, sorting) is handled by the service layer.
+ * All input validation is done by utils/validators.js.
  */
 
 import Database from "../db/database.js";
@@ -35,28 +36,16 @@ async function findById(id) {
     return row ? mapNote(row) : null;
 }
 
-async function list({ sort = "oldest", activeOnly = false }) {
-    const whereParts = ["deleted_at IS NULL"];
-
-    if (activeOnly) {
-        whereParts.push("completed = 0");
-    }
-
-    let orderClause;
-    if (sort === "priority") {
-        orderClause = "ORDER BY priority DESC, datetime(created_at) ASC, id ASC";
-    } else if (sort === "dueDate") {
-        orderClause =
-            "ORDER BY CASE WHEN due_at IS NULL THEN 1 ELSE 0 END, due_at ASC, datetime(created_at) ASC, id ASC";
-    } else {
-        orderClause = `ORDER BY datetime(created_at) ${sort === "oldest" ? "ASC" : "DESC"}, id ASC`;
-    }
-
+/**
+ * Retrieve all non-deleted notes (raw from database).
+ * Filtering and sorting handled by service layer.
+ * @returns {Promise<Array>} - All non-deleted notes
+ */
+async function list() {
     const rows = await Database.all(
         `SELECT id, title, content, completed, priority, created_at, updated_at, due_at
          FROM notes
-         WHERE ${whereParts.join(" AND ")}
-         ${orderClause}`,
+         WHERE deleted_at IS NULL`,
     );
 
     return rows.map(mapNote);

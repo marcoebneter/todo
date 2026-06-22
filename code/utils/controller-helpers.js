@@ -1,5 +1,5 @@
 /**
- * controllerHelpers.js
+ * controller-helpers.js
  * Helper functions to reduce duplicated validation and response logic in controllers.
  */
 
@@ -10,8 +10,8 @@ import {
     parseOptionalDueDate,
     parseRequiredTitle,
     parseId,
-} from "../utils/validators.js";
-import { errorResponse, notFoundResponse } from "../utils/responseHandler.js";
+} from "./validators.js";
+import { errorResponse, notFoundResponse } from "./response-handler.js";
 
 /**
  * Validate and parse an id parameter. Sends a validation error response when invalid.

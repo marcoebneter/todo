@@ -1,14 +1,16 @@
 /**
- * Utility functions for validation across controllers and middleware.
- * Handles ID parsing, title validation, and content validation.
+ * Input validators for note API endpoints.
+ * Each parser returns a result object with `ok` flag, `value` on success, or `message` + `details` on error.
+ * Follows Option A error format for API responses.
  */
 
 import moment from "moment";
 
 /**
- * Parse and validate a numeric ID.
- * @param {any} rawId - The raw ID value from request params
- * @returns {number|null} - Valid positive integer or null if invalid
+ * Parse and validate a numeric ID from request params.
+ *
+ * @param {any} rawId - The raw ID value from request parameters
+ * @returns {number|null} - Valid positive integer, or null if invalid
  */
 function parseId(rawId) {
     const id = Number(rawId);
@@ -17,8 +19,11 @@ function parseId(rawId) {
 
 /**
  * Parse and validate a required title string.
+ *
  * @param {any} value - The title value to validate
- * @returns {string|null} - Trimmed non-empty string or null if invalid
+ * @returns {{ok: boolean, value?: string, message?: string, details?: object}}
+ *   - On success: { ok: true, value: "trimmed title" }
+ *   - On error: { ok: false, message: "...", details: { field: "title" } }
  */
 function parseRequiredTitle(value) {
     if (typeof value !== "string") {
@@ -43,8 +48,11 @@ function parseRequiredTitle(value) {
 
 /**
  * Parse an optional content string.
- * @param {any} value - The content value to parse
- * @returns {string} - Trimmed string or empty string if not a string
+ *
+ * @param {any} value - The content value to parse (optional)
+ * @returns {{ok: boolean, value?: string, message?: string, details?: object}}
+ *   - On success: { ok: true, value: "trimmed content or empty string" }
+ *   - On error: { ok: false, message: "...", details: { field: "content" } }
  */
 function parseOptionalContent(value) {
     if (value === undefined) {
@@ -62,6 +70,15 @@ function parseOptionalContent(value) {
     return { ok: true, value: value.trim() };
 }
 
+/**
+ * Parse an optional completed boolean flag.
+ *
+ * @param {any} value - The completed value to parse (optional)
+ * @returns {{ok: boolean, value?: boolean, message?: string, details?: object}}
+ *   - On success: { ok: true, value: true|false }
+ *   - On error: { ok: false, message: "...", details: { field: "completed" } }
+ *   - Default (undefined): { ok: true, value: false }
+ */
 function parseOptionalCompleted(value) {
     if (value === undefined) {
         return { ok: true, value: false };
@@ -79,9 +96,13 @@ function parseOptionalCompleted(value) {
 }
 
 /**
- * Parse an optional priority value (1-3).
- * @param {any} value - The priority value to parse
- * @returns {Object} - Result object with ok flag and value or error details
+ * Parse and validate an optional priority (1-3).
+ *
+ * @param {any} value - The priority value to parse (optional)
+ * @returns {{ok: boolean, value?: number, message?: string, details?: object}}
+ *   - On success: { ok: true, value: 1|2|3 }
+ *   - On error: { ok: false, message: "...", details: { field: "priority" } }
+ *   - Default (undefined): { ok: true, value: 2 } (medium priority)
  */
 function parseOptionalPriority(value) {
     if (value === undefined) {
@@ -101,9 +122,15 @@ function parseOptionalPriority(value) {
 }
 
 /**
- * Parse an optional due date (ISO format YYYY-MM-DD).
- * @param {any} value - The due date value to parse
- * @returns {Object} - Result object with ok flag and value (null if empty) or error details
+ * Parse and validate an optional due date.
+ *
+ * Accepts ISO format (YYYY-MM-DD) or Swiss format (DD.MM.YYYY).
+ * Empty/undefined values return null (not required).
+ *
+ * @param {any} value - The due date value to parse (optional)
+ * @returns {{ok: boolean, value?: string|null, message?: string, details?: object}}
+ *   - On success: { ok: true, value: "YYYY-MM-DD" or null }
+ *   - On error: { ok: false, message: "...", details: { field: "dueAt" } }
  */
 function parseOptionalDueDate(value) {
     // Empty string or undefined = null (not required)

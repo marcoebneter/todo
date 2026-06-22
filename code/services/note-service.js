@@ -4,19 +4,54 @@
  * Handles data transformations, validation orchestration, and model calls.
  */
 
-import NoteModel from "../models/noteModel.js";
+import NoteModel from "../models/note-model.js";
 
 class NoteService {
     /**
-     * List all notes with optional filtering.
-     * @param {Object} options - Filter options
-     * @param {string} options.sort - Sort order: "oldest", "newest", or "priority" (default: "oldest")
-     *                                 "priority" sorts by priority DESC (high to low), then by creation date
+     * List all notes with optional filtering and sorting.
+     * Business logic: filters by completion status and sorts results.
+     *
+     * @param {Object} options - Filter and sort options
+     * @param {string} options.sort - Sort order: "oldest", "newest", "priority", or "dueDate" (default: "oldest")
      * @param {boolean} options.activeOnly - Show only active (not completed) notes (default: false)
-     * @returns {Promise<Array>} - Array of note objects
+     * @returns {Promise<Array>} - Filtered and sorted array of note objects
      */
     async listNotes({ sort = "oldest", activeOnly = false } = {}) {
-        return await NoteModel.list({ sort, activeOnly });
+        // Retrieve all notes from database
+        let notes = await NoteModel.list();
+
+        // Filter: active notes only
+        if (activeOnly) {
+            notes = notes.filter((note) => !note.completed);
+        }
+
+        // Sort
+        if (sort === "priority") {
+            notes.sort((a, b) => {
+                const priorityDiff = (b.priority || 2) - (a.priority || 2);
+                if (priorityDiff !== 0) return priorityDiff;
+                return new Date(a.createdAt) - new Date(b.createdAt);
+            });
+        } else if (sort === "dueDate") {
+            notes.sort((a, b) => {
+                // Notes with due date first, then by due date
+                if (a.dueAt === null && b.dueAt === null) {
+                    return new Date(a.createdAt) - new Date(b.createdAt);
+                }
+                if (a.dueAt === null) return 1;
+                if (b.dueAt === null) return -1;
+                const dueDateDiff = new Date(a.dueAt) - new Date(b.dueAt);
+                if (dueDateDiff !== 0) return dueDateDiff;
+                return new Date(a.createdAt) - new Date(b.createdAt);
+            });
+        } else if (sort === "newest") {
+            notes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        } else {
+            // "oldest" (default)
+            notes.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        }
+
+        return notes;
     }
 
     /**

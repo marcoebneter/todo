@@ -1,6 +1,20 @@
-import { listNotes, createNote, replaceNote, patchNote, deleteNote } from "../services/notesApi.js";
+import { listNotes, createNote, replaceNote, patchNote, deleteNote } from "../services/notes-api.js";
 
-class NotesController {
+function normalizeDueDateInput(value) {
+    if (!value || value.trim() === "") {
+        return { ok: true, value: null };
+    }
+
+    const raw = value.trim();
+    const m = window.moment?.(raw, ["DD.MM.YYYY", "YYYY-MM-DD"], true);
+    if (!m || !m.isValid()) {
+        return { ok: false };
+    }
+
+    return { ok: true, value: m.format("YYYY-MM-DD") };
+}
+
+class NotesUiController {
     constructor(view) {
         this.view = view;
         this.state = {
@@ -47,6 +61,38 @@ class NotesController {
         return this.state.notes.find((note) => note.id === id) || null;
     }
 
+    formatDateTime(value) {
+        if (!value) {
+            return "";
+        }
+
+        const formatted = window.moment?.(value)?.format("DD.MM.YYYY HH:mm");
+        return formatted || "";
+    }
+
+    formatDateOnly(value) {
+        if (!value) {
+            return null;
+        }
+
+        const formatted = window.moment?.(value, ["YYYY-MM-DD", "DD.MM.YYYY"], true)?.format("DD.MM.YYYY");
+        return formatted || null;
+    }
+
+    toViewModel(note) {
+        const priority = Number.isInteger(note.priority) ? note.priority : 2;
+        return {
+            ...note,
+            createdAtLabel: this.formatDateTime(note.createdAt),
+            dueDateLabel: this.formatDateOnly(note.dueAt),
+            contentLabel: note.content || "(keine Beschreibung)",
+            priorityClass: `priority-${priority}`,
+            priorityAtLeast1: priority >= 1,
+            priorityAtLeast2: priority >= 2,
+            priorityAtLeast3: priority >= 3,
+        };
+    }
+
     setEditMode(note) {
         if (!note) {
             this.state.editingNoteId = null;
@@ -70,7 +116,7 @@ class NotesController {
                 sort: this.state.sort,
                 showCompleted: this.state.showCompleted,
             });
-            this.view.renderNotes(this.state.notes);
+            this.view.renderNotes(this.state.notes.map((note) => this.toViewModel(note)));
         } catch (error) {
             this.view.renderError(error.message);
         }
@@ -81,9 +127,15 @@ class NotesController {
 
         const title = formPayload.title.trim();
         const content = formPayload.content.trim();
+        const dueDateResult = normalizeDueDateInput(formPayload.dueAt);
 
         if (!title) {
             this.view.renderError("Titel ist ein Pflichtfeld.");
+            return;
+        }
+
+        if (!dueDateResult.ok) {
+            this.view.renderError("Fälligkeitsdatum ist ungültig.");
             return;
         }
 
@@ -92,6 +144,7 @@ class NotesController {
             content,
             completed: this.state.editingNoteCompleted,
             priority: this.state.selectedPriority,
+            dueAt: dueDateResult.value,
         };
 
         try {
@@ -138,4 +191,4 @@ class NotesController {
     }
 }
 
-export default NotesController;
+export default NotesUiController;

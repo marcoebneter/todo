@@ -1,5 +1,8 @@
 node_modules
 
+# Generated library files (copied from node_modules during postinstall)
+code/public/lib/
+
 # Environment files
 .env
 .env.*

@@ -11,33 +11,45 @@ class NotesView {
         this.notesMount = document.getElementById("notes-mount");
         this.formErrorMount = document.getElementById("form-error-mount");
         this.saveButtonMount = document.getElementById("save-button-mount");
-
-        const handlebars = window.Handlebars;
-
-        // Register custom helper for comparison
-        handlebars.registerHelper("gte", (a, b) => a >= b);
-
-        this.notesTemplate = handlebars.compile(document.getElementById("notes-template").innerHTML);
-        this.errorTemplate = handlebars.compile(document.getElementById("form-error-template").innerHTML);
-        this.saveButtonTemplate = handlebars.compile(document.getElementById("save-button-template").innerHTML);
+        this.formError = document.getElementById("form-error");
+        this.notesTemplate = null;
     }
 
-    formatDate(value) {
-        return new Date(value).toLocaleString("de-CH", {
-            dateStyle: "medium",
-            timeStyle: "short",
-        });
+    async init() {
+        await this.loadTemplates();
     }
 
-    formatDateOnly(value) {
-        if (!value) return "";
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) return "";
-        return date.toLocaleDateString("de-CH", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-        });
+    async loadTemplates() {
+        if (!window.Handlebars) {
+            return null;
+        }
+
+        const response = await fetch("templates/notes-list.hbs", { method: "GET" });
+        if (!response.ok) {
+            throw new Error("Template konnte nicht geladen werden.");
+        }
+
+        const templateSource = await response.text();
+        this.notesTemplate = window.Handlebars.compile(templateSource);
+    }
+
+    // Escape dynamic user-facing text before writing it into existing DOM nodes.
+    escapeHtml(value) {
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#39;");
+    }
+
+    formatDueDateForInput(value) {
+        if (!value) {
+            return "";
+        }
+
+        const m = window.moment?.(value, ["YYYY-MM-DD", "DD.MM.YYYY"], true);
+        return m && m.isValid() ? m.format("YYYY-MM-DD") : "";
     }
 
     bindFormSubmit(handler) {
@@ -127,34 +139,37 @@ class NotesView {
     }
 
     renderNotes(notes) {
-        const templateNotes = notes.map((note) => ({
-            ...note,
-            createdAtLabel: this.formatDate(note.createdAt),
-            dueDateLabel: note.dueAt ? this.formatDateOnly(note.dueAt) : null,
-            contentLabel: note.content || "(keine Beschreibung)",
-            priorityClass: `priority-${note.priority || 2}`,
-        }));
+        if (!this.notesTemplate) {
+            this.notesMount.innerHTML =
+                '<p id="empty-state" class="empty-state">Template konnte nicht geladen werden.</p>';
+            return;
+        }
 
         this.notesMount.innerHTML = this.notesTemplate({
-            notes: templateNotes,
-            hasNotes: templateNotes.length > 0,
+            hasNotes: notes.length > 0,
+            notes,
         });
     }
 
     renderError(message) {
-        this.formErrorMount.classList.toggle("visually-hidden", message === "");
-        this.formErrorMount.innerHTML = this.errorTemplate({ message });
+        const safeMessage = this.escapeHtml(message);
+        this.formErrorMount.classList.toggle("visually-hidden", safeMessage === "");
+
+        if (this.formError) {
+            this.formError.textContent = safeMessage;
+        }
     }
 
     renderFormState({ isEditing, note, selectedPriority = 2 }) {
-        this.saveButtonMount.innerHTML = this.saveButtonTemplate({
-            saveLabel: isEditing ? "Aktualisieren" : "Speichern",
-        });
+        const saveButton = this.saveButtonMount.querySelector("#save-button");
+        if (saveButton) {
+            saveButton.textContent = isEditing ? "Aktualisieren" : "Speichern";
+        }
 
         if (isEditing && note) {
             this.noteTitle.value = note.title;
             this.noteContent.value = note.content;
-            this.noteDueDate.value = note.dueAt || "";
+            this.noteDueDate.value = this.formatDueDateForInput(note.dueAt);
             this.cancelEditButton.hidden = false;
             this.updatePriorityEmojis(selectedPriority);
             this.noteTitle.focus();

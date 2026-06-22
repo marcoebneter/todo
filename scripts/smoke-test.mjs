@@ -47,7 +47,7 @@ async function waitForServer(timeoutMs = 8000) {
 }
 
 async function run() {
-    const server = spawn("node", ["code/server/server.js"], {
+    const server = spawn("node", ["index.js"], {
         cwd: process.cwd(),
         stdio: ["ignore", "pipe", "pipe"],
     });
