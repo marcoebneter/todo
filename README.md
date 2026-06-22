@@ -60,6 +60,7 @@ A lightweight but well-structured notes and todo application. Notes can be creat
 | Server Framework | Express 5                          |
 | Database         | SQLite (`sqlite3`)                 |
 | Client Rendering | Handlebars (client-side templates) |
+| Date/Time        | Moment.js                          |
 | Client Scripting | Plain JS ES Modules                |
 | Testing          | Vitest + Supertest                 |
 | Linting          | ESLint + Prettier                  |
@@ -88,13 +89,14 @@ The application follows the **MVC pattern on both server and client**.
 
 ### Client MVC
 
-| File                                                     | Responsibility                               |
-| -------------------------------------------------------- | -------------------------------------------- |
-| `code/public/scripts/index.js`                           | Client bootstrap — wires view and controller |
-| `code/public/scripts/controllers/notes-ui-controller.js` | UI state management and event orchestration  |
-| `code/public/scripts/views/notes-view.js`                | DOM event binding and Handlebars rendering   |
-| `code/public/scripts/services/notes-api.js`              | All `fetch` calls to the server API          |
-| `code/public/scripts/theme.js`                           | Dark/light mode logic                        |
+| File                                                | Responsibility                               |
+| --------------------------------------------------- | -------------------------------------------- |
+| `code/public/js/index.js`                           | Client bootstrap — wires view and controller |
+| `code/public/js/controllers/notes-ui-controller.js` | UI state management and event orchestration  |
+| `code/public/js/views/notes-view.js`                | DOM event binding and Handlebars rendering   |
+| `code/public/js/services/notes-api.js`              | All `fetch` calls to the server API          |
+| `code/public/js/theme.js`                           | Dark/light mode logic                        |
+| `code/public/templates/notes-list.hbs`              | Client-side Handlebars template for notes    |
 
 > The root page is served as static `code/public/index.html`. Notes are fetched via `/api/notes` and rendered in the browser using a client-side Handlebars template.
 
@@ -105,15 +107,18 @@ The application follows the **MVC pattern on both server and client**.
 ```text
 todo/
 ├── index.js
+├── package.json
 ├── data/
 │   └── notes.db
 ├── scripts/
+│   ├── setup-libs.mjs
 │   └── smoke-test.mjs
 ├── code/
 │   ├── app.js
+│   ├── conf.js
 │   ├── controllers/
-│   │   ├── notes-api-controller.js
-│   │   └── page-controller.js
+│   │   ├── controller-helpers.js (moved to utils/)
+│   │   └── notes-api-controller.js
 │   ├── db/
 │   │   └── database.js
 │   ├── middleware/
@@ -121,33 +126,41 @@ todo/
 │   ├── models/
 │   │   └── note-model.js
 │   ├── public/
+│   │   ├── index.html
 │   │   ├── favicon.png
-│   │   ├── styles/
+│   │   ├── lib/
+│   │   │   ├── handlebars.js (copied by postinstall)
+│   │   │   └── moment.js (copied by postinstall)
+│   │   ├── css/
 │   │   │   ├── index.css
+│   │   │   ├── themes.css
+│   │   │   ├── header.css
+│   │   │   ├── content.css
+│   │   │   ├── footer.css
 │   │   │   └── components/
-│   │   └── scripts/
-│   │       ├── controllers/
-│   │       │   └── notes-ui-controller.js
-│   │       ├── services/
-│   │       │   └── notes-api.js
-│   │       ├── views/
-│   │       │   └── notes-view.js
-│   │       ├── index.js
-│   │       └── theme.js
+│   │   │       ├── buttons.css
+│   │   │       ├── inputs.css
+│   │   │       ├── toolbars.css
+│   │   │       └── notes.css
+│   │   ├── js/
+│   │   │   ├── index.js
+│   │   │   ├── theme.js
+│   │   │   ├── controllers/
+│   │   │   │   └── notes-ui-controller.js
+│   │   │   ├── services/
+│   │   │   │   └── notes-api.js
+│   │   │   └── views/
+│   │   │       └── notes-view.js
+│   │   └── templates/
+│   │       └── notes-list.hbs
 │   ├── routes/
-│   │   ├── notes-routes.js
-│   │   └── page-routes.js
+│   │   └── notes-routes.js
 │   ├── services/
 │   │   └── note-service.js
-│   ├── utils/
-│   │   ├── response-handler.js
-│   │   └── validators.js
-│   └── views/
-│       ├── index.hbs
-│       ├── layouts/
-│       │   └── default.hbs
-│       └── partials/
-│           └── notes-list.hbs
+│   └── utils/
+│       ├── controller-helpers.js
+│       ├── response-handler.js
+│       └── validators.js
 └── tests/
     └── notes.api.spec.js
 ```
