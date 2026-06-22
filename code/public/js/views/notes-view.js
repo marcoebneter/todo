@@ -12,6 +12,25 @@ class NotesView {
         this.formErrorMount = document.getElementById("form-error-mount");
         this.saveButtonMount = document.getElementById("save-button-mount");
         this.formError = document.getElementById("form-error");
+        this.notesTemplate = null;
+    }
+
+    async init() {
+        await this.loadTemplates();
+    }
+
+    async loadTemplates() {
+        if (!window.Handlebars) {
+            return null;
+        }
+
+        const response = await fetch("templates/notes-list.hbs", { method: "GET" });
+        if (!response.ok) {
+            throw new Error("Template konnte nicht geladen werden.");
+        }
+
+        const templateSource = await response.text();
+        this.notesTemplate = window.Handlebars.compile(templateSource);
     }
 
     // Escape dynamic user-facing text before writing it into existing DOM nodes.
@@ -119,8 +138,17 @@ class NotesView {
         });
     }
 
-    renderNotesMarkup(html) {
-        this.notesMount.innerHTML = html;
+    renderNotes(notes) {
+        if (!this.notesTemplate) {
+            this.notesMount.innerHTML =
+                '<p id="empty-state" class="empty-state">Template konnte nicht geladen werden.</p>';
+            return;
+        }
+
+        this.notesMount.innerHTML = this.notesTemplate({
+            hasNotes: notes.length > 0,
+            notes,
+        });
     }
 
     renderError(message) {

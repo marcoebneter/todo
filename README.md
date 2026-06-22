@@ -7,7 +7,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white)](https://expressjs.com)
 [![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org)
-[![Handlebars](https://img.shields.io/badge/Handlebars-SSR-f0772b?logo=handlebarsdotjs&logoColor=white)](https://handlebarsjs.com)
+[![Handlebars](https://img.shields.io/badge/Handlebars-Client%20Rendering-f0772b?logo=handlebarsdotjs&logoColor=white)](https://handlebarsjs.com)
 [![Vitest](https://img.shields.io/badge/Vitest-tests-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev)
 [![ESLint](https://img.shields.io/badge/ESLint-linted-4B32C3?logo=eslint&logoColor=white)](https://eslint.org)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](LICENSE.md)
@@ -54,16 +54,16 @@ A lightweight but well-structured notes and todo application. Notes can be creat
 
 ## 🛠️ Tech Stack
 
-| Layer            | Technology                |
-| ---------------- | ------------------------- |
-| Runtime          | Node.js 18+               |
-| Server Framework | Express 5                 |
-| Database         | SQLite (`sqlite3`)        |
-| Client Rendering | Handlebars (SSR partials) |
-| Client Scripting | Plain JS ES Modules       |
-| Testing          | Vitest + Supertest        |
-| Linting          | ESLint + Prettier         |
-| Git Hooks        | Husky + lint-staged       |
+| Layer            | Technology                         |
+| ---------------- | ---------------------------------- |
+| Runtime          | Node.js 18+                        |
+| Server Framework | Express 5                          |
+| Database         | SQLite (`sqlite3`)                 |
+| Client Rendering | Handlebars (client-side templates) |
+| Client Scripting | Plain JS ES Modules                |
+| Testing          | Vitest + Supertest                 |
+| Linting          | ESLint + Prettier                  |
+| Git Hooks        | Husky + lint-staged                |
 
 ---
 
@@ -73,22 +73,18 @@ The application follows the **MVC pattern on both server and client**.
 
 ### Server MVC
 
-| File                                       | Responsibility                                                                   |
-| ------------------------------------------ | -------------------------------------------------------------------------------- |
-| `code/app.js`                              | Express app setup — middleware, routes, static files, view engine, error handler |
-| `index.js`                                 | Process entry point — DB init and `app.listen`                                   |
-| `code/routes/page-routes.js`               | Page route definitions for server-rendered views                                 |
-| `code/controllers/page-controller.js`      | Controller for rendering page templates                                          |
-| `code/views/index.hbs`                     | Server-rendered content view for the root route                                  |
-| `code/views/layouts/default.hbs`           | Shared Handlebars layout wrapping rendered pages                                 |
-| `code/routes/notes-routes.js`              | API route definitions for `/api/notes`                                           |
-| `code/controllers/notes-api-controller.js` | HTTP request validation and response formatting                                  |
-| `code/services/note-service.js`            | Business logic between controller and model                                      |
-| `code/models/note-model.js`                | SQL queries and data mapping                                                     |
-| `code/db/database.js`                      | SQLite connection, query helpers, schema init                                    |
-| `code/middleware/error-handler.js`         | Global error handler                                                             |
-| `code/utils/response-handler.js`           | Consistent API response helpers                                                  |
-| `code/utils/validators.js`                 | Strict typed input validators                                                    |
+| File                                       | Responsibility                                                          |
+| ------------------------------------------ | ----------------------------------------------------------------------- |
+| `code/app.js`                              | Express app setup — middleware, static files, API routes, error handler |
+| `index.js`                                 | Process entry point — DB init and `app.listen`                          |
+| `code/routes/notes-routes.js`              | API route definitions for `/api/notes`                                  |
+| `code/controllers/notes-api-controller.js` | HTTP request validation and response formatting                         |
+| `code/services/note-service.js`            | Business logic between controller and model                             |
+| `code/models/note-model.js`                | SQL queries and data mapping                                            |
+| `code/db/database.js`                      | SQLite connection, query helpers, schema init                           |
+| `code/middleware/error-handler.js`         | Global error handler                                                    |
+| `code/utils/response-handler.js`           | Consistent API response helpers                                         |
+| `code/utils/validators.js`                 | Strict typed input validators                                           |
 
 ### Client MVC
 
@@ -96,11 +92,11 @@ The application follows the **MVC pattern on both server and client**.
 | -------------------------------------------------------- | -------------------------------------------- |
 | `code/public/scripts/index.js`                           | Client bootstrap — wires view and controller |
 | `code/public/scripts/controllers/notes-ui-controller.js` | UI state management and event orchestration  |
-| `code/public/scripts/views/notes-view.js`                | DOM event binding and UI state rendering     |
+| `code/public/scripts/views/notes-view.js`                | DOM event binding and Handlebars rendering   |
 | `code/public/scripts/services/notes-api.js`              | All `fetch` calls to the server API          |
 | `code/public/scripts/theme.js`                           | Dark/light mode logic                        |
 
-> The root page is rendered from `code/views/index.hbs` with `code/views/layouts/default.hbs`. The notes list is rendered server-side via `code/views/partials/notes-list.hbs` and loaded from `/partials/notes`.
+> The root page is served as static `code/public/index.html`. Notes are fetched via `/api/notes` and rendered in the browser using a client-side Handlebars template.
 
 ---
 

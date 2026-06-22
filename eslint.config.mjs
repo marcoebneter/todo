@@ -9,7 +9,7 @@ export default defineConfig([
         ignores: ["node_modules/**", "dist/**", "coverage/**"],
     },
     {
-        files: ["code/public/scripts/**/*.{js,mjs,cjs}"],
+        files: ["code/public/js/**/*.{js,mjs,cjs}"],
         plugins: { js },
         extends: ["js/recommended"],
         languageOptions: {
@@ -24,7 +24,7 @@ export default defineConfig([
         },
     },
     {
-        files: ["code/server/**/*.js", "scripts/**/*.{js,mjs,cjs}", "index.js"],
+        files: ["code/server/**/*.js", "js/**/*.{js,mjs,cjs}", "index.js"],
         plugins: { js },
         extends: ["js/recommended"],
         languageOptions: {

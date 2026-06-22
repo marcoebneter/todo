@@ -8,6 +8,8 @@
     "main": "index.js",
     "scripts": {
         "start": "node index.js",
+        "setup:libs": "node scripts/setup-libs.mjs",
+        "postinstall": "npm run setup:libs",
         "dev": "npm run dev:server",
         "dev:live": "concurrently -k -n BACKEND,VIEW -c cyan,magenta \"npm run dev:server\" \"npm run frontend:live\"",
         "dev:server": "nodemon --watch code --ignore code/public --ext js,mjs,cjs,json index.js",
@@ -45,7 +47,7 @@
     },
     "dependencies": {
         "express": "^5.2.1",
-        "express-handlebars": "^8.0.3",
+        "handlebars": "^4.7.8",
         "moment": "^2.30.1",
         "sqlite3": "^6.0.1"
     }

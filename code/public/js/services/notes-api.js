@@ -22,17 +22,6 @@ async function request(url, options, fallbackMessage) {
     return response.json();
 }
 
-async function requestText(url, options, fallbackMessage) {
-    const response = await fetch(url, options);
-
-    if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        throw createApiError(response, body, fallbackMessage);
-    }
-
-    return response.text();
-}
-
 async function listNotes({ sort, showCompleted }) {
     const query = new URLSearchParams({
         sort,
@@ -82,17 +71,4 @@ async function deleteNote(id) {
     return request(`/api/notes/${id}`, { method: "DELETE" }, "Archivieren fehlgeschlagen.");
 }
 
-async function fetchNotesMarkup({ sort, showCompleted }) {
-    const query = new URLSearchParams({
-        sort,
-        activeOnly: String(!showCompleted),
-    });
-
-    return requestText(
-        `/partials/notes?${query.toString()}`,
-        { method: "GET" },
-        "Notizen konnten nicht gerendert werden.",
-    );
-}
-
-export { listNotes, createNote, replaceNote, patchNote, deleteNote, fetchNotesMarkup };
+export { listNotes, createNote, replaceNote, patchNote, deleteNote };

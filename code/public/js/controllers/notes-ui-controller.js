@@ -1,4 +1,4 @@
-import { listNotes, createNote, replaceNote, patchNote, deleteNote, fetchNotesMarkup } from "../services/notes-api.js";
+import { listNotes, createNote, replaceNote, patchNote, deleteNote } from "../services/notes-api.js";
 
 function normalizeDueDateInput(value) {
     if (!value || value.trim() === "") {
@@ -61,6 +61,38 @@ class NotesUiController {
         return this.state.notes.find((note) => note.id === id) || null;
     }
 
+    formatDateTime(value) {
+        if (!value) {
+            return "";
+        }
+
+        const formatted = window.moment?.(value)?.format("DD.MM.YYYY HH:mm");
+        return formatted || "";
+    }
+
+    formatDateOnly(value) {
+        if (!value) {
+            return null;
+        }
+
+        const formatted = window.moment?.(value, ["YYYY-MM-DD", "DD.MM.YYYY"], true)?.format("DD.MM.YYYY");
+        return formatted || null;
+    }
+
+    toViewModel(note) {
+        const priority = Number.isInteger(note.priority) ? note.priority : 2;
+        return {
+            ...note,
+            createdAtLabel: this.formatDateTime(note.createdAt),
+            dueDateLabel: this.formatDateOnly(note.dueAt),
+            contentLabel: note.content || "(keine Beschreibung)",
+            priorityClass: `priority-${priority}`,
+            priorityAtLeast1: priority >= 1,
+            priorityAtLeast2: priority >= 2,
+            priorityAtLeast3: priority >= 3,
+        };
+    }
+
     setEditMode(note) {
         if (!note) {
             this.state.editingNoteId = null;
@@ -84,11 +116,7 @@ class NotesUiController {
                 sort: this.state.sort,
                 showCompleted: this.state.showCompleted,
             });
-            const notesMarkup = await fetchNotesMarkup({
-                sort: this.state.sort,
-                showCompleted: this.state.showCompleted,
-            });
-            this.view.renderNotesMarkup(notesMarkup);
+            this.view.renderNotes(this.state.notes.map((note) => this.toViewModel(note)));
         } catch (error) {
             this.view.renderError(error.message);
         }

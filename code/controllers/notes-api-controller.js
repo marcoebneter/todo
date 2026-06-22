@@ -18,7 +18,7 @@ import {
     handleValidationResult,
     buildPatchPayload,
     sendNotFoundIfMissing,
-} from "./controller-helpers.js";
+} from "../utils/controller-helpers.js";
 
 class NotesApiController {
     constructor() {
